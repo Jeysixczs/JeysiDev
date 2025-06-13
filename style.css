@@ -1251,6 +1251,29 @@ footer {
     .footer-container {
         padding: 0 20px;
     }
+
+    .theme-toggle {
+        margin-left: auto; /* Pushes toggle to the right */
+        margin-right: 1rem; /* Adds spacing from the menu button */
+    }
+
+    .switch {
+        width: 50px; /* Slightly smaller toggle */
+        height: 25px;
+    }
+
+    .slider:before {
+        height: 18px;
+        width: 18px;
+    }
+
+    input:checked + .slider:before {
+        transform: translateX(25px); /* Adjusted for smaller toggle */
+    }
+
+    .theme-label {
+        display: none; /* Hide label on small screens if space is tight */
+    }
 }
 
 @media (max-width: 576px) {
@@ -1600,5 +1623,90 @@ header {
     to { 
         transform: translateY(0);
         opacity: 1;
+    }
+}
+@media (max-width: 480px) {
+    .switch {
+        width: 45px; /* Even smaller for very small screens */
+    }
+
+    input:checked + .slider:before {
+        transform: translateX(20px);
+    }
+}
+
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto; /* Push to the right */
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px; /* Smaller base size */
+    height: 24px; /* Slimmer */
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--gray);
+    transition: var(--transition);
+    border-radius: 24px; /* Match height */
+}
+
+.slider:before {
+    position: absolute;
+    content: '';
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--white);
+    transition: var(--transition);
+    border-radius: 50%;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px); /* Adjusted for smaller width */
+}
+
+.theme-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+@media (max-width: 380px) {
+    .theme-toggle {
+        gap: 0.3rem; /* Tighter spacing */
+        margin-right: 0.5rem; /* Less margin */
+    }
+
+    .switch {
+        width: 42px; /* Even smaller */
+        height: 20px;
+    }
+
+    .slider:before {
+        height: 14px;
+        width: 14px;
+        left: 3px;
+        bottom: 3px;
+    }
+
+    input:checked + .slider:before {
+        transform: translateX(22px); /* Fine-tuned position */
+    }
+
+    .theme-label {
+        font-size: 0.7rem; /* Smaller text */
+        display: none; /* Optional: Hide label if cramped */
     }
 }

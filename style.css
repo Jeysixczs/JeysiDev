@@ -39,6 +39,14 @@
     --shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     --shadow-dark: 0 8px 30px rgba(0, 0, 0, 0.5);
 }
+.header-container {
+   
+    padding-left: 3rem;
+    padding-right: 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
 * {
     margin: 0;
@@ -213,12 +221,17 @@ header {
 }
 
 .header-container {
-   
-    padding-left: 3rem;
-    padding-right: 3rem;
+   padding: 0 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
+
+    /* padding-left: 3rem;
+    padding-right: 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center; */
 }
 
 .logo {
@@ -237,6 +250,9 @@ header {
 nav ul {
     display: flex;
     gap: 2rem;
+   
+   
+   
 }
 
 nav ul li a {
@@ -266,7 +282,7 @@ nav ul li a.active::after {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-left: 2rem;
+  
 }
 
 .switch {
@@ -1284,7 +1300,6 @@ footer {
     }
     
     .container, 
-    .header-container,
     .hero,
     .skills-container,
     .projects-grid,
@@ -1639,7 +1654,7 @@ header {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-left: auto; /* Push to the right */
+   
 }
 
 .switch {

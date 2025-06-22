@@ -1,18 +1,18 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Mobile menu toggle
     const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
     const navMenu = document.querySelector('nav ul');
-    
-    mobileMenuBtn.addEventListener('click', function() {
+
+    mobileMenuBtn.addEventListener('click', function () {
         navMenu.classList.toggle('active');
         this.querySelector('i').classList.toggle('fa-times');
         this.querySelector('i').classList.toggle('fa-bars');
     });
-    
+
     // Close mobile menu when clicking on a link
     const navLinks = document.querySelectorAll('nav ul li a');
     navLinks.forEach(link => {
-        link.addEventListener('click', function() {
+        link.addEventListener('click', function () {
             if (window.innerWidth <= 768) {
                 navMenu.classList.remove('active');
                 mobileMenuBtn.querySelector('i').classList.remove('fa-times');
@@ -20,15 +20,15 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    
+
     // Theme toggle functionality
     const themeToggle = document.querySelector('.theme-toggle input');
     const themeLabel = document.querySelector('.theme-label');
-    
+
     // Check for saved theme preference or use preferred color scheme
-    const savedTheme = localStorage.getItem('theme') || 
-                       (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    
+    const savedTheme = localStorage.getItem('theme') ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
     if (savedTheme === 'dark') {
         document.documentElement.setAttribute('data-theme', 'dark');
         themeToggle.checked = true;
@@ -38,8 +38,8 @@ document.addEventListener('DOMContentLoaded', function() {
         themeToggle.checked = false;
         themeLabel.textContent = 'Dark Mode';
     }
-    
-    themeToggle.addEventListener('change', function() {
+
+    themeToggle.addEventListener('change', function () {
         if (this.checked) {
             document.documentElement.setAttribute('data-theme', 'dark');
             localStorage.setItem('theme', 'dark');
@@ -50,52 +50,62 @@ document.addEventListener('DOMContentLoaded', function() {
             themeLabel.textContent = 'Dark Mode';
         }
     });
-    
+
     // Back to top button
     const backToTopBtn = document.querySelector('.back-to-top');
-    
-    window.addEventListener('scroll', function() {
+
+    window.addEventListener('scroll', function () {
         if (window.pageYOffset > 300) {
             backToTopBtn.classList.add('active');
         } else {
             backToTopBtn.classList.remove('active');
         }
     });
-    
-    backToTopBtn.addEventListener('click', function(e) {
+
+    backToTopBtn.addEventListener('click', function (e) {
         e.preventDefault();
         window.scrollTo({
             top: 0,
             behavior: 'smooth'
         });
     });
-    
+
     // Form submission
-    const contactForm = document.querySelector('.contact-form');
-    if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Here you would typically send the form data to a server
-            alert('Thank you for your message! I will get back to you soon.');
-            this.reset();
+    const btn = document.getElementById('button');
+
+    document.getElementById('form')
+        .addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            btn.value = 'Sending...';
+
+            const serviceID = 'service_o9c6r3i';
+            const templateID = 'template_56vklo7';
+
+            emailjs.sendForm(serviceID, templateID, this)
+                .then(() => {
+                    btn.value = 'Send Email';
+                    alert('Sent!');
+                }, (err) => {
+                    btn.value = 'Send Email';
+                    alert(JSON.stringify(err));
+                });
         });
-    }
-    
     // Newsletter form submission
     const newsletterForm = document.querySelector('.newsletter-form');
     if (newsletterForm) {
-        newsletterForm.addEventListener('submit', function(e) {
+        newsletterForm.addEventListener('submit', function (e) {
             e.preventDefault();
             const emailInput = this.querySelector('input[type="email"]');
             alert(`Thank you for subscribing with ${emailInput.value}!`);
             emailInput.value = '';
         });
     }
-    
+
     // Animate skill bars when they come into view
     const skillBars = document.querySelectorAll('.skill-level');
     const skillsSection = document.querySelector('.skills-section');
-    
+
     const animateSkillBars = () => {
         skillBars.forEach(bar => {
             const width = bar.style.width;
@@ -105,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 100);
         });
     };
-    
+
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -114,19 +124,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }, { threshold: 0.1 });
-    
+
     if (skillsSection) {
         observer.observe(skillsSection);
     }
-    
+
     // Smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
+        anchor.addEventListener('click', function (e) {
             e.preventDefault();
-            
+
             const targetId = this.getAttribute('href');
             if (targetId === '#') return;
-            
+
             const targetElement = document.querySelector(targetId);
             if (targetElement) {
                 window.scrollTo({
@@ -151,15 +161,16 @@ function closePdfModal() {
 }
 
 // Close when clicking outside content
-window.onclick = function(event) {
+window.onclick = function (event) {
     if (event.target == document.getElementById('pdfModal')) {
         closePdfModal();
     }
 }
 
 // Close with Escape key
-document.addEventListener('keydown', function(event) {
+document.addEventListener('keydown', function (event) {
     if (event.key === 'Escape') {
         closePdfModal();
     }
 });
+

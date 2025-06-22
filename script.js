@@ -87,21 +87,29 @@ document.addEventListener('DOMContentLoaded', function () {
             emailjs.sendForm(serviceID, templateID, this)
                 .then(() => {
                     btn.value = 'Send Email';
-                    alert('Sent!');
-                    this.reset(); 
+                    showAlert('Your message has been sent successfully!', 'success');
+                    this.reset();
                 }, (err) => {
                     btn.value = 'Send Email';
-                    alert(JSON.stringify(err));
+                    showAlert('There was an error sending your message. Please try again.', 'error')
                 });
         });
+
     // Newsletter form submission
     const newsletterForm = document.querySelector('.newsletter-form');
     if (newsletterForm) {
         newsletterForm.addEventListener('submit', function (e) {
             e.preventDefault();
             const emailInput = this.querySelector('input[type="email"]');
-            alert(`Thank you for subscribing with ${emailInput.value}!`);
-            emailInput.value = '';
+            if (emailInput) {
+                const email = emailInput.value.trim();
+                if (email) {
+                    showAlert(`Subscribed! You'll receive updates on my latest projects at ${email}`, 'success');
+                    emailInput.value = '';
+                } else {
+                    showAlert('Please enter your email to subscribe for project updates', 'error');
+                }
+            }
         });
     }
 
@@ -151,10 +159,46 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+function showAlert(message, type = 'info') {
+    // Create alert element if it doesn't exist
+    let alertEl = document.querySelector('.custom-alert');
+    if (!alertEl) {
+        alertEl = document.createElement('div');
+        alertEl.className = `custom-alert ${type}`;
+        document.body.appendChild(alertEl);
+    } else {
+        alertEl.className = `custom-alert ${type}`;
+    }
+
+    // Set alert content
+    alertEl.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+        ${message}
+        <span class="close-alert">&times;</span>
+    `;
+
+    // Show alert
+    alertEl.classList.add('show');
+
+    // Close button functionality
+    alertEl.querySelector('.close-alert').addEventListener('click', () => {
+        alertEl.classList.remove('show');
+    });
+
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+        if (alertEl.classList.contains('show')) {
+            alertEl.classList.remove('show');
+        }
+    }, 5000);
+}
+
+
 function openPdfModal(pdfUrl) {
     document.getElementById('pdfViewer').src = pdfUrl;
     document.getElementById('pdfModal').style.display = 'block';
     document.body.classList.add('modal-open');
+    showAlert('PDF viewer opened. Click outside or press ESC to close.', 'info');
 }
 
 function closePdfModal() {

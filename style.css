@@ -1725,3 +1725,52 @@ input:checked + .slider:before {
         display: none; /* Optional: Hide label if cramped */
     }
 }
+
+/* Custom Alert Styles */
+.custom-alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    color: white;
+    font-weight: 500;
+    z-index: 1000;
+    transform: translateX(150%);
+    transition: transform 0.3s ease-in-out;
+    display: flex;
+    align-items: center;
+    max-width: 90%;
+}
+
+.custom-alert.show {
+    transform: translateX(0);
+}
+
+.custom-alert.success {
+    background-color: #4CAF50;
+    border-left: 5px solid #2E7D32;
+}
+
+.custom-alert.error {
+    background-color: #F44336;
+    border-left: 5px solid #C62828;
+}
+
+.custom-alert.info {
+    background-color: #2196F3;
+    border-left: 5px solid #1565C0;
+}
+
+.custom-alert i {
+    margin-right: 10px;
+    font-size: 1.2em;
+}
+
+.close-alert {
+    margin-left: 15px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.2em;
+}

@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
             btn.value = 'Sending...';
 
             const serviceID = 'service_o9c6r3i';
-            const templateID = 'template_56vklo7';
+            const templateID = 'template_8m2ef5z';
 
             emailjs.sendForm(serviceID, templateID, this)
                 .then(() => {

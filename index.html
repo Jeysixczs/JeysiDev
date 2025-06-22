@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
-    
+
     <link rel="icon" href="JeysiDev-ico.png" type="image/x-icon">
 </head>
 
@@ -371,19 +371,19 @@
 
                 <form class="contact-form" id="form">
                     <div class="form-group">
-                        <input type="text" id="name" placeholder=" " required>
+                        <input type="text" name="name" id="name" placeholder=" " required>
                         <label for="name">Your Name</label>
                     </div>
                     <div class="form-group">
-                        <input type="email" id="email" name="email" placeholder=" " required>
+                        <input type="text" name="email" id="email" placeholder=" " required>
                         <label for="email">Your Email</label>
                     </div>
                     <div class="form-group">
-                        <input type="text" id="subject" placeholder=" ">
+                        <input type="text" name="title" id="title" placeholder=" ">
                         <label for="subject">Subject</label>
                     </div>
                     <div class="form-group">
-                        <textarea id="message" placeholder=" " rows="5" required></textarea>
+                        <textarea id="message"  type="text" name="message"  placeholder=" " rows="5" required></textarea>
                         <label for="message">Your Message</label>
                     </div>
                     <button type="submit" class="btn submit-btn" id="button" value="Send Email">Send Message <i
@@ -429,10 +429,11 @@
 
     <script src="script.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-
     <script type="text/javascript">
         emailjs.init('fkqtab5fa94PqFult')
     </script>
+
+    
 </body>
 
 </html>

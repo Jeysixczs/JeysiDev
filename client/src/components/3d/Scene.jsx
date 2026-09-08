@@ -51,9 +51,18 @@ export default function Scene({ sectionRef }) {
       <pointLight position={[5, 5, 5]} intensity={1.1} color="#3DDAD7" />
       <pointLight position={[-5, -3, -2]} intensity={0.8} color="#8B6BFF" />
       {!isLowPower && !prefersReducedMotion && <CursorLight mouse={interactionMouse} />}
+      {/* Touch devices have no cursor to drive CursorLight, so give the
+          glass shards a fixed light in roughly the same spot instead of
+          losing their highlight entirely. */}
+      {isLowPower && (
+        <pointLight position={[0, 0, 3]} intensity={0.6} color="#B3A0FF" distance={7} />
+      )}
 
       <Suspense fallback={<SceneLoader />}>
-        {!isLowPower && <Environment preset="night" />}
+        {/* MeshTransmissionMaterial needs an environment map to have
+            anything to refract — without one the glass shards look flat.
+            Keep it on mobile too, just at a much cheaper resolution. */}
+        <Environment preset="night" resolution={isLowPower ? 32 : 256} />
         <Particles
           count={isLowPower ? 350 : 900}
           mouse={interactionMouse}

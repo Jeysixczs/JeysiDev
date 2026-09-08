@@ -84,7 +84,7 @@ export default function Cursor() {
     cursorState === "view" ? "View" : cursorState === "drag" ? "Drag" : "";
 
   return (
-    <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-[90]">
+    <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-[110]">
       <div
         ref={dotRef}
         className="fixed left-0 top-0 h-1.5 w-1.5 rounded-full bg-cyan transition-opacity duration-150"

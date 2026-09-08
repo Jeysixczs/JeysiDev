@@ -1,0 +1,117 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* overflow-x: hidden lives on body only — putting it on html breaks
+     `position: fixed` in mobile Safari (fixed elements like the navbar
+     either detach from the viewport or stop responding to taps). body
+     still blocks any accidental horizontal scroll from blurred glow
+     elements or parallax offsets. */
+  body {
+    overflow-x: hidden;
+    width: 100%;
+  }
+
+  ::selection {
+    background-color: #3ddad7;
+    color: #06080f;
+  }
+
+  body {
+    background-color: #06080f;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: "Space Grotesk", sans-serif;
+    letter-spacing: -0.02em;
+  }
+
+  /* Visible keyboard focus everywhere */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid #3ddad7;
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+
+  /* Hides the native pointer while the custom cursor (Cursor.jsx) is
+     mounted. The !important beats any inline cursor style set by
+     hover handlers (e.g. the 3D scene's pointer-over cursor: pointer). */
+  html.custom-cursor-active,
+  html.custom-cursor-active * {
+    cursor: none !important;
+  }
+}
+
+@layer components {
+  .section-shell {
+    @apply mx-auto w-full max-w-6xl px-6 sm:px-8 lg:px-10;
+  }
+
+  .glass-panel {
+    @apply border border-white/[0.06] bg-white/[0.03] backdrop-blur-xl;
+  }
+
+  /* Same look as .glass-panel but without backdrop-filter. Everywhere
+     this site uses glass panels sits on a flat, textureless background
+     (body is a solid #06080F, no gradient or moving content behind
+     sections), so blurring "behind" the card blurs nothing and only
+     costs a repaint. That cost is negligible for the one or two panels
+     other sections show at a time, but the skills grid renders 8-11
+     panels on screen simultaneously, and stacking that many
+     backdrop-filter layers is expensive to repaint on every scroll
+     frame. Swapping to a flat, slightly more opaque background there
+     reads identically but skips that cost. */
+  .glass-panel-static {
+    @apply border border-white/[0.06] bg-surface;
+  }
+
+  .eyebrow-index {
+    @apply font-mono text-xs tracking-tight text-cyan/80;
+  }
+
+  .btn-primary {
+    @apply relative inline-flex items-center justify-center gap-2 rounded-full bg-signal-gradient
+      px-7 py-3 font-display text-sm font-medium text-void transition-transform duration-300
+      hover:scale-[1.03] active:scale-[0.94] [touch-action:manipulation];
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-white/15
+      px-7 py-3 font-display text-sm font-medium text-ink transition-all duration-300
+      hover:border-cyan/60 hover:text-cyan active:scale-[0.94] [touch-action:manipulation];
+  }
+}
+
+/* Custom scrollbar to match the void theme */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #06080f;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e2740;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3ddad7;
+}

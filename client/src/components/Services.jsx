@@ -8,7 +8,7 @@ export default function Services() {
     <section id="services" className="relative border-t border-white/[0.05] py-28">
       <div className="section-shell">
         <SectionHeading
-          index="05"
+          index="06"
           title="What I can take off your plate"
           description="From a single interface component to the whole stack behind it."
         />

@@ -75,7 +75,7 @@ export default function Contact() {
     <section id="contact" className="relative border-t border-white/[0.05] py-28">
       <div className="section-shell">
         <SectionHeading
-          index="06"
+          index="07"
           title="Let's build something worth a second look."
           description="Have a project in mind, or just want to talk shop? My inbox is open."
         />

@@ -13,30 +13,36 @@ const FALLBACK_IMG =
 const COUNT = certificates.length;
 
 /**
- * Shortest signed distance from a continuous position to card slot `i` on
- * a circle of size COUNT — e.g. with 6 cards, slot 0 is only +1 away from
- * position 5, not -5 away. This is what makes the carousel loop instead
- * of stopping at the first/last card.
+ * Signed "step distance" of card `i` from the front-and-center slot,
+ * given the continuous scroll `position` — e.g. -2, -1, 0, 1, 2 for a
+ * 5-card deck. Wrapped to the nearest representative in
+ * (-COUNT/2, COUNT/2] so every card always takes the shortest path
+ * to its resting spot (2 slots left, 2 slots right of front) instead
+ * of a true circular arrangement, where cards past ±90° would swing
+ * back in toward the center and read as "missing" side cards.
  */
-function circularOffset(i, position) {
+function cardOffset(i, position) {
   const raw = i - position;
   return raw - COUNT * Math.round(raw / COUNT);
 }
 
 /**
- * Geometry of the 3D stage, tuned per breakpoint. `spacing` is the
- * horizontal distance (px) between adjacent card centers, `depth` is how
- * far back (px, along -z) each step away from center pushes a card, and
- * `maxAngle` is the full tilt a side card settles into.
+ * Geometry of the coverflow stage, tuned per breakpoint. `spacing` is
+ * the horizontal distance (px) between adjacent card centers, `depth`
+ * is how far back (px, along -z) each step away from center pushes a
+ * card, `maxAngle` is the tilt a side card settles into, and
+ * `visibleRange` is how many cards deep on each side of front stay
+ * visible (2 = front + 2 left + 2 right).
  */
 function useStageConfig() {
   const [config, setConfig] = useState({
     cardWidth: 300,
     stageHeight: 380,
-    spacing: 190,
+    spacing: 170,
     maxAngle: 42,
-    depth: 150,
-    visibleRange: 3,
+    depth: 110,
+    minScale: 0.62,
+    visibleRange: 2,
   });
 
   useEffect(() => {
@@ -47,28 +53,31 @@ function useStageConfig() {
       if (lgQuery.matches) {
         setConfig({
           cardWidth: 300,
-          stageHeight: 380,
+          stageHeight: 410,
           spacing: 190,
           maxAngle: 42,
-          depth: 150,
-          visibleRange: 3,
+          depth: 120,
+          minScale: 0.64,
+          visibleRange: 2,
         });
       } else if (smQuery.matches) {
         setConfig({
-          cardWidth: 250,
+          cardWidth: 210,
           stageHeight: 330,
-          spacing: 150,
+          spacing: 130,
           maxAngle: 40,
-          depth: 120,
+          depth: 90,
+          minScale: 0.6,
           visibleRange: 2,
         });
       } else {
         setConfig({
-          cardWidth: 208,
-          stageHeight: 290,
-          spacing: 108,
+          cardWidth: 150,
+          stageHeight: 260,
+          spacing: 82,
           maxAngle: 34,
-          depth: 90,
+          depth: 60,
+          minScale: 0.56,
           visibleRange: 2,
         });
       }
@@ -86,54 +95,83 @@ function useStageConfig() {
   return config;
 }
 
-function CertificateFace({ certificate, active }) {
+function CertificateFace({ certificate, activeStrength }) {
   return (
-    <div
-      className={`glass-panel-static flex h-full w-full flex-col overflow-hidden rounded-2xl border transition-colors duration-300 ${
-        active ? "border-cyan/40 shadow-glow" : "border-white/10"
-      }`}
-    >
-      <div className="aspect-[4/3] w-full overflow-hidden bg-surface-raised">
-        <img
-          src={certificate.image}
-          alt=""
-          className="h-full w-full object-cover"
-          loading="lazy"
-          draggable={false}
-          onError={(e) => {
-            e.currentTarget.src = FALLBACK_IMG;
-          }}
-        />
+    <div className="relative h-full w-full">
+      <div className="glass-panel-static flex h-full w-full flex-col overflow-hidden rounded-2xl border border-white/10">
+        <div className="aspect-[4/3] w-full overflow-hidden bg-surface-raised">
+          <img
+            src={certificate.image}
+            alt=""
+            className="h-full w-full object-cover"
+            // No lazy-loading here: with loading="lazy" the browser
+            // decides visibility from the element's *transformed*
+            // bounding box, and this card is constantly spinning through
+            // rotateY/translateZ — so mid-arc it can look "off-screen"
+            // to the intersection check and get its image paused/resumed,
+            // which reads as a blink on the side cards specifically.
+            decoding="async"
+            draggable={false}
+            onError={(e) => {
+              e.currentTarget.src = FALLBACK_IMG;
+            }}
+          />
+        </div>
+        <div className="flex flex-1 flex-col gap-1 p-4">
+          <h3 className="line-clamp-2 font-display text-sm leading-snug text-ink">
+            {certificate.title}
+          </h3>
+          <p className="line-clamp-1 text-xs text-ink-muted">{certificate.issuer}</p>
+          <span className="mt-auto pt-1 font-mono text-[11px] text-ink-faint">
+            {certificate.date}
+          </span>
+        </div>
       </div>
-      <div className="flex flex-1 flex-col gap-1 p-4">
-        <h3 className="line-clamp-2 font-display text-sm leading-snug text-ink">
-          {certificate.title}
-        </h3>
-        <p className="line-clamp-1 text-xs text-ink-muted">{certificate.issuer}</p>
-        <span className="mt-auto pt-1 font-mono text-[11px] text-ink-faint">
-          {certificate.date}
-        </span>
-      </div>
+      {/* Cyan glow overlay, crossfaded in/out with `activeStrength` rather
+          than snapped on/off, so it stays in sync with the card's slide
+          instead of jumping to the next card ahead of the animation. */}
+      <motion.div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 rounded-2xl border border-cyan/40 shadow-glow"
+        style={{ opacity: activeStrength }}
+      />
     </div>
   );
 }
 
 function Card3D({ certificate, i, position, config, isFront, onFrontClick, onSideClick }) {
-  const offset = useTransform(position, (latest) => circularOffset(i, latest));
-  const x = useTransform(offset, (o) => `calc(-50% + ${o * config.spacing}px)`);
-  const z = useTransform(offset, (o) => -Math.min(Math.abs(o), 3) * config.depth);
-  const rotateY = useTransform(offset, (o) => {
-    const direction = o > 0 ? -1 : o < 0 ? 1 : 0;
-    return direction * Math.min(Math.abs(o), 1) * config.maxAngle;
-  });
-  const scale = useTransform(offset, (o) => Math.max(1 - Math.min(Math.abs(o), 3) * 0.14, 0.58));
-  const opacity = useTransform(offset, (o) => {
-    const fadeRange = config.visibleRange + 1;
-    return Math.max(1 - Math.abs(o) / fadeRange, 0);
-  });
-  const zIndex = useTransform(offset, (o) => Math.round(100 - Math.abs(o) * 10));
+  const offset = useTransform(position, (latest) => cardOffset(i, latest));
+  const absOffset = useTransform(offset, Math.abs);
 
-  const farAway = Math.abs(circularOffset(i, position.get())) > config.visibleRange + 1;
+  // Straight coverflow layout: each step left/right moves a full
+  // `spacing` further out, so the front card always has exactly two
+  // full slots visible on each side (for a 5-card deck) instead of a
+  // circular arrangement where the far cards swing back toward center.
+  const x = useTransform(offset, (o) => `calc(-50% + ${o * config.spacing}px)`);
+  const z = useTransform(absOffset, (a) => -Math.min(a, config.visibleRange + 1) * config.depth);
+  // Tilt ramps in over the first step, then holds steady for cards
+  // further out — they just get smaller and sit further back instead
+  // of tilting more.
+  const rotateY = useTransform(offset, (o) => -Math.sign(o) * Math.min(Math.abs(o), 1) * config.maxAngle);
+  const scale = useTransform(absOffset, (a) => {
+    const t = Math.min(a / (config.visibleRange + 0.5), 1); // 0 at front, 1 at the edge of the visible range
+    return 1 - (1 - config.minScale) * t;
+  });
+  // Cards past the visible range fade out (and stop intercepting
+  // clicks/drag) over the last half-step, so growing the deck beyond
+  // 5 certificates doesn't clutter the stage.
+  const opacity = useTransform(absOffset, (a) =>
+    Math.max(0, Math.min(1, config.visibleRange + 0.5 - a))
+  );
+  const pointerEvents = useTransform(absOffset, (a) => (a <= config.visibleRange + 0.5 ? "auto" : "none"));
+  // Front-most card (closest to the viewer) always renders on top; the
+  // `+ i` tiebreaker keeps ordering deterministic if two cards are ever
+  // at the exact same depth, instead of it jittering frame to frame.
+  const zIndex = useTransform(absOffset, (a) => Math.round((100 - a) * 10) + i);
+  // Fully on at the front slot, fading out over the first quarter-step
+  // as it slides off-center — tracks the physical slide instead of
+  // toggling the instant `index` changes.
+  const activeStrength = useTransform(offset, (o) => Math.max(1 - Math.abs(o) / 0.25, 0));
 
   return (
     <motion.div
@@ -147,8 +185,11 @@ function Card3D({ certificate, i, position, config, isFront, onFrontClick, onSid
         scale,
         opacity,
         zIndex,
-        pointerEvents: farAway ? "none" : "auto",
+        pointerEvents,
         transformStyle: "preserve-3d",
+        willChange: "transform, opacity",
+        backfaceVisibility: "hidden",
+        WebkitBackfaceVisibility: "hidden",
       }}
     >
       <button
@@ -157,7 +198,7 @@ function Card3D({ certificate, i, position, config, isFront, onFrontClick, onSid
         onClick={() => (isFront ? onFrontClick() : onSideClick())}
         className="block h-full w-full text-left [touch-action:manipulation]"
       >
-        <CertificateFace certificate={certificate} active={isFront} />
+        <CertificateFace certificate={certificate} activeStrength={activeStrength} />
       </button>
     </motion.div>
   );
@@ -263,6 +304,7 @@ export default function Certificates() {
   const [index, setIndex] = useState(0);
   const position = useMotionValue(0);
   const dragStartRef = useRef(0);
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     const controls = animate(position, index, { type: "spring", stiffness: 260, damping: 30 });
@@ -284,6 +326,7 @@ export default function Certificates() {
   }
 
   function handlePanStart() {
+    setIsDragging(true);
     dragStartRef.current = position.get();
   }
 
@@ -293,10 +336,24 @@ export default function Certificates() {
 
   function handlePanEnd() {
     setIndex(Math.round(position.get()));
+    setIsDragging(false);
   }
 
   const [openSlot, setOpenSlot] = useState(null);
   const isOpen = openSlot !== null;
+
+  const canSlide = COUNT > 1;
+
+  // Auto-advance every 3s. Pauses while the user is dragging or the
+  // viewer modal is open, and restarts fresh 3s from any manual
+  // navigation (index change) so it doesn't fight the user's input.
+  useEffect(() => {
+    if (!canSlide || isOpen || isDragging) return;
+    const id = setInterval(() => {
+      setIndex((i) => i + 1);
+    }, 3000);
+    return () => clearInterval(id);
+  }, [canSlide, isOpen, isDragging, index]);
 
   function close() {
     setOpenSlot(null);
@@ -308,7 +365,6 @@ export default function Certificates() {
     setOpenSlot((s) => (s + 1) % COUNT);
   }
 
-  const canSlide = COUNT > 1;
 
   return (
     <section id="certificates" className="relative border-t border-white/[0.05] py-28">

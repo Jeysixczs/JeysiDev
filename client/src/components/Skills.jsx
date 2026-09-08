@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, forwardRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import SectionHeading from "./ui/SectionHeading";
 import TiltCard from "./ui/TiltCard";
@@ -13,11 +13,12 @@ const CATEGORY_COLORS = {
   Database: "#FFB347",
 };
 
-function SkillCard({ skill, index }) {
+const SkillCard = forwardRef(function SkillCard({ skill, index }, ref) {
   const color = CATEGORY_COLORS[skill.category] || "#3DDAD7";
 
   return (
     <motion.div
+      ref={ref}
       layout
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -43,7 +44,7 @@ function SkillCard({ skill, index }) {
       </TiltCard>
     </motion.div>
   );
-}
+});
 
 export default function Skills() {
   const categories = useMemo(

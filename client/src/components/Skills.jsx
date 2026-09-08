@@ -62,7 +62,7 @@ export default function Skills() {
   );
 
   return (
-    <section id="skills" className="relative border-t border-white/[0.05] py-28">
+    <section id="skills" className="relative border-t border-white/[0.05] py-3 sm:py-28">
       <div className="section-shell">
         <SectionHeading
           index="02"

@@ -5,7 +5,7 @@ import { profile } from "../data/profile";
 
 export default function About() {
   return (
-    <section id="about" className="relative border-t border-white/[0.05] py-28">
+    <section id="about" className="relative border-t border-white/[0.05] py-3 sm:py-28">
       <div className="section-shell">
         <SectionHeading
           index="01"

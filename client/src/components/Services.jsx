@@ -5,7 +5,7 @@ import { services } from "../data/services";
 
 export default function Services() {
   return (
-    <section id="services" className="relative border-t border-white/[0.05] py-28">
+    <section id="services" className="relative border-t border-white/[0.05] py-3 sm:py-28">
       <div className="section-shell">
         <SectionHeading
           index="06"

@@ -367,7 +367,7 @@ export default function Certificates() {
 
 
   return (
-    <section id="certificates" className="relative border-t border-white/[0.05] py-28">
+    <section id="certificates" className="relative border-t border-white/[0.05] py-3 sm:py-28">
       <div className="section-shell">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading

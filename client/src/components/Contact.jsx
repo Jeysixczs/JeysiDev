@@ -72,7 +72,7 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="relative border-t border-white/[0.05] py-28">
+    <section id="contact" className="relative border-t border-white/[0.05] py-3 sm:py-28">
       <div className="section-shell">
         <SectionHeading
           index="07"

@@ -4,7 +4,7 @@ import { experience } from "../data/experience";
 
 export default function Experience() {
   return (
-    <section id="experience" className="relative border-t border-white/[0.05] py-28">
+    <section id="experience" className="relative border-t border-white/[0.05] py-3 sm:py-28">
       <div className="section-shell">
         <SectionHeading
           index="04"

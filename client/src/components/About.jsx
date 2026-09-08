@@ -25,7 +25,7 @@ export default function About() {
               <img
                 src={profile.avatar}
                 alt={`Portrait of ${profile.name}`}
-                className="aspect-[4/5] w-full object-cover grayscale"
+                className="aspect-[4/5] w-full object-cover blur-[0.7px] transition-all duration-500"
                 onError={(e) => {
                   e.currentTarget.style.display = "none";
                 }}

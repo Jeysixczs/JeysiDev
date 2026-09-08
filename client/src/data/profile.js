@@ -9,7 +9,7 @@ export const profile = {
     "I'm John Carlo Aquino, known online as JeysiDev — a front-end developer who enjoys turning ideas into interactive, responsive experiences on the web.",
     "I mostly work with HTML, CSS, and JavaScript, and I like exploring beyond the basics — from building an offline AI chatbot to a client-side manga reader and a C#/.NET survival game. I care about clean, readable code and interfaces that feel good to use.",
   ],
-  avatar: "/avatar.jpg",
+  avatar: "/profile/avatar.jpg",
   resumeUrl: "/resume.pdf",
   email: "johncarloaquino205@gmail.com",
   stats: [

@@ -33,4 +33,22 @@ export const services = [
     tags: ["UI/UX", "Prototyping"],
     size: "sm",
   },
+  {
+    title: "Database Management",
+    description: "Basic database management and queries, with experience in SQL Server and Firebase.",
+    tags: ["SqlServer", "Firebase"],
+    size: "sm",
+  },
+  {
+    title: "Mobile App Development",
+    description: "Building and testing mobile apps with Android Studio.",
+    tags: ["Java", "Android Studio", "Kotlin"],
+    size: "sm",
+  },
+  {
+    title: "Unity",
+    description: "Creating 2D and 3D games and interactive experiences with Unity.",
+    tags: ["Unity", "C#", "Game Development"],
+    size: "sm",
+  }
 ];

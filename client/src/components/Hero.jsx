@@ -36,7 +36,7 @@ export default function Hero() {
           colorStops={["#3DDAD7", "#8B6BFF", "#3DDAD7"]}
           amplitude={coarsePointer ? 1.15 : 1.0}
           blend={coarsePointer ? 0.7 : 0.6}
-          speed={coarsePointer ? 1.05 : 0.8}
+          speed={coarsePointer ? 1000 : 3}
           paused={prefersReducedMotion}
         />
       </div>

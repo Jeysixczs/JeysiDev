@@ -12,4 +12,8 @@ export const skills = [
   { name: "VS Code", category: "Tooling", note: "Primary editor and dev workflow." },
   { name: "Responsive Design", category: "Frontend", note: "Mobile-first layouts across breakpoints." },
   { name: "UI/UX Principles", category: "Frontend", note: "Interface design and usability basics." },
+  { name: "Unity", category: "Tooling", note: "Game engine for 2D/3D projects." },
+  { name: "Sqlserver", category: "Database", note: "Lightweight database for local storage." },
+  { name: "Firebase", category: "Database", note: "Cloud-hosted database for web apps." },
+  { name: "Blender", category: "Tooling", note: "Creating 3D assets for games and visualizations." },
 ];

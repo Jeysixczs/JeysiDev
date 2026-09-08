@@ -100,7 +100,7 @@ export default function Projects() {
       <div className="section-shell">
         <SectionHeading
           index="03"
-          title="Selected work"
+          title="Projects"
           description="A handful of projects that show the range — from real-time 3D to plain, dependable CRUD."
         />
 

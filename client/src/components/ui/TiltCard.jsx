@@ -14,8 +14,13 @@ import { useDeviceCapability } from "../../hooks/useDeviceCapability";
  * gives a springy tap bounce (touchstart/touchend) — the same physics,
  * driven by touch input instead of the pointer. Both are skipped when
  * reduced motion is requested.
+ *
+ * `spotlightColor` accepts an "r,g,b" triplet (no `rgb()` wrapper) so
+ * callers can recolor the cursor-follow glow per instance — e.g. the
+ * skills grid tints each card's glow to match its category. Defaults
+ * to the site's cyan accent.
  */
-export default function TiltCard({ children, className = "" }) {
+export default function TiltCard({ children, className = "", spotlightColor = "61,218,215" }) {
   const ref = useRef(null);
   const imageRef = useRef(null);
   const rectRef = useRef(null);
@@ -133,7 +138,7 @@ export default function TiltCard({ children, className = "" }) {
               : "opacity-0 group-hover:opacity-100"
           }`}
           style={{
-            background: `radial-gradient(280px circle at ${glowX} ${glowY}, rgba(61,218,215,0.18), transparent 65%)`,
+            background: `radial-gradient(280px circle at ${glowX} ${glowY}, rgba(${spotlightColor},0.18), transparent 65%)`,
           }}
         />
       )}

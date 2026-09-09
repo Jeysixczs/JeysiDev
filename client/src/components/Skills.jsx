@@ -13,6 +13,20 @@ const CATEGORY_COLORS = {
   Database: "#FFB347",
 };
 
+const cardVariants = {
+  initial: { opacity: 0, y: 20 },
+  animate: (index) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.35, delay: index * 0.03 },
+  }),
+  // No y offset and no stagger delay here — filtered-out cards should just
+  // fade quickly where they already sit, while the surviving cards snap
+  // into their new compact grid position at the same time (mode="popLayout"
+  // on the parent AnimatePresence is what drives that instant realign).
+  exit: { opacity: 0, transition: { duration: 0.15, delay: 0 } },
+};
+
 const SkillCard = forwardRef(function SkillCard({ skill, index }, ref) {
   const color = CATEGORY_COLORS[skill.category] || "#3DDAD7";
 
@@ -20,12 +34,13 @@ const SkillCard = forwardRef(function SkillCard({ skill, index }, ref) {
     <motion.div
       ref={ref}
       layout
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: 0.35, delay: index * 0.03 }}
+      custom={index}
+      variants={cardVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
     >
-      <TiltCard className="glass-panel-static h-full rounded-2xl p-5">
+      <TiltCard className="glass-panel h-full rounded-2xl p-5">
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="font-display text-base text-ink">{skill.name}</p>
@@ -87,7 +102,7 @@ export default function Skills() {
           ))}
         </div>
 
-        <motion.div layout className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <motion.div layout className="relative grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           <AnimatePresence mode="popLayout">
             {filtered.map((skill, i) => (
               <SkillCard key={skill.name} skill={skill} index={i} />

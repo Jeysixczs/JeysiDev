@@ -7,7 +7,7 @@ import { certificates } from "../data/certificates";
 const FALLBACK_IMG =
   "data:image/svg+xml;utf8," +
   encodeURIComponent(
-    `<svg xmlns='http://www.w3.org/2000/svg' width='400' height='300'><rect width='100%' height='100%' fill='#131A2C'/><text x='50%' y='50%' fill='#525C75' font-family='monospace' font-size='14' text-anchor='middle'>certificate</text></svg>`
+    `<svg xmlns='http://www.w3.org/2000/svg' width='400' height='300'><rect width='100%' height='100%' fill='#808aa0' fill-opacity='.15'/><text x='50%' y='50%' fill='#808aa0' font-family='monospace' font-size='14' text-anchor='middle'>certificate</text></svg>`
   );
 
 const COUNT = certificates.length;
@@ -98,7 +98,7 @@ function useStageConfig() {
 function CertificateFace({ certificate, activeStrength }) {
   return (
     <div className="relative h-full w-full">
-      <div className="glass-panel-static flex h-full w-full flex-col overflow-hidden rounded-2xl border border-white/10">
+      <div className="flex h-full w-full flex-col overflow-hidden border border-white/15 bg-surface">
         <div className="aspect-[4/3] w-full overflow-hidden bg-surface-raised">
           <img
             src={certificate.image}
@@ -118,21 +118,21 @@ function CertificateFace({ certificate, activeStrength }) {
           />
         </div>
         <div className="flex flex-1 flex-col gap-1 p-4">
-          <h3 className="line-clamp-2 font-display text-sm leading-snug text-ink">
+          <h3 className="line-clamp-2 font-display text-sm leading-snug text-white">
             {certificate.title}
           </h3>
-          <p className="line-clamp-1 text-xs text-ink-muted">{certificate.issuer}</p>
-          <span className="mt-auto pt-1 font-mono text-[11px] text-ink-faint">
+          <p className="line-clamp-1 text-xs text-white/60">{certificate.issuer}</p>
+          <span className="mt-auto pt-1 font-mono text-[11px] text-white/40">
             {certificate.date}
           </span>
         </div>
       </div>
-      {/* Cyan glow overlay, crossfaded in/out with `activeStrength` rather
+      {/* White ring overlay, crossfaded in/out with `activeStrength` rather
           than snapped on/off, so it stays in sync with the card's slide
           instead of jumping to the next card ahead of the animation. */}
       <motion.div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 rounded-2xl border border-cyan/40 shadow-glow"
+        className="pointer-events-none absolute inset-0 border border-white shadow-[0_0_50px_-12px_var(--cert-glow)]"
         style={{ opacity: activeStrength }}
       />
     </div>
@@ -194,7 +194,6 @@ function Card3D({ certificate, i, position, config, isFront, onFrontClick, onSid
     >
       <button
         type="button"
-        data-cursor="view"
         onClick={() => (isFront ? onFrontClick() : onSideClick())}
         className="block h-full w-full text-left [touch-action:manipulation]"
       >
@@ -227,7 +226,7 @@ function CertificateViewer({ certificate, onClose, onPrev, onNext, hasMultiple }
       <button
         onClick={onClose}
         aria-label="Close"
-        className="absolute right-4 top-4 text-ink-muted transition-colors hover:text-ink sm:right-8 sm:top-8"
+        className="absolute right-4 top-4 text-white/70 transition-colors hover:text-white sm:right-8 sm:top-8"
       >
         <CloseIcon />
       </button>
@@ -240,7 +239,7 @@ function CertificateViewer({ certificate, onClose, onPrev, onNext, hasMultiple }
               onPrev();
             }}
             aria-label="Previous certificate"
-            className="absolute left-2 top-1/2 -translate-y-1/2 text-ink-muted transition-colors hover:text-ink sm:left-6"
+            className="absolute left-2 top-1/2 -translate-y-1/2 text-white/70 transition-colors hover:text-white sm:left-6"
           >
             <ChevronLeftIcon />
           </button>
@@ -250,7 +249,7 @@ function CertificateViewer({ certificate, onClose, onPrev, onNext, hasMultiple }
               onNext();
             }}
             aria-label="Next certificate"
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-ink-muted transition-colors hover:text-ink sm:right-6"
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-white/70 transition-colors hover:text-white sm:right-6"
           >
             <ChevronRightIcon />
           </button>
@@ -263,7 +262,7 @@ function CertificateViewer({ certificate, onClose, onPrev, onNext, hasMultiple }
         exit={{ scale: 0.96, opacity: 0 }}
         transition={{ duration: 0.2 }}
         onClick={(e) => e.stopPropagation()}
-        className="flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-surface-raised"
+        className="flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden border border-white/15 bg-surface"
       >
         <img
           src={certificate.image}
@@ -274,8 +273,8 @@ function CertificateViewer({ certificate, onClose, onPrev, onNext, hasMultiple }
           }}
         />
         <div className="p-5">
-          <h3 className="font-display text-lg text-ink">{certificate.title}</h3>
-          <p className="mt-1 text-sm text-ink-muted">
+          <h3 className="font-display text-lg text-white">{certificate.title}</h3>
+          <p className="mt-1 text-sm text-white/60">
             {certificate.issuer} &middot; {certificate.date}
           </p>
           {certificate.credentialUrl && (
@@ -283,7 +282,7 @@ function CertificateViewer({ certificate, onClose, onPrev, onNext, hasMultiple }
               href={certificate.credentialUrl}
               target="_blank"
               rel="noreferrer"
-              className="mt-3 inline-block text-sm text-cyan hover:underline"
+              className="mt-3 inline-block text-sm text-white underline underline-offset-4 hover:opacity-70"
             >
               Verify credential
             </a>
@@ -367,22 +366,23 @@ export default function Certificates() {
 
 
   return (
-    <section id="certificates" className="relative border-t border-white/[0.05] py-3 sm:py-28">
+    <section id="certificates" className="relative border-t border-white/10 py-20 sm:py-28 lg:py-36">
       <div className="section-shell">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading
             index="05"
+            label="Certificates"
             title="Certificates"
-            description="Drag to spin through the stack in 3D — it loops forever. Tap the front card for a closer look."
+            description="Drag to spin through the stack — it loops forever. Tap the front card for a closer look."
           />
 
           {canSlide && (
-            <div className="mb-14 hidden items-center gap-2 sm:flex">
+            <div className="mb-16 hidden items-center gap-2 sm:flex">
               <button
                 type="button"
                 onClick={() => step(-1)}
                 aria-label="Previous certificate"
-                className="rounded-full border border-white/10 p-2 text-ink-muted transition-colors duration-200 hover:border-cyan/40 hover:text-cyan"
+                className="rounded-full border border-white/20 p-2 text-white/70 transition-colors duration-200 hover:border-white hover:text-white"
               >
                 <ChevronLeftIcon width={16} height={16} />
               </button>
@@ -390,7 +390,7 @@ export default function Certificates() {
                 type="button"
                 onClick={() => step(1)}
                 aria-label="Next certificate"
-                className="rounded-full border border-white/10 p-2 text-ink-muted transition-colors duration-200 hover:border-cyan/40 hover:text-cyan"
+                className="rounded-full border border-white/20 p-2 text-white/70 transition-colors duration-200 hover:border-white hover:text-white"
               >
                 <ChevronRightIcon width={16} height={16} />
               </button>
@@ -432,7 +432,7 @@ export default function Certificates() {
                 onClick={() => goToSlot(i)}
                 aria-label={`Go to certificate ${i + 1}`}
                 className={`h-1.5 rounded-full transition-all duration-300 [touch-action:manipulation] ${
-                  i === frontSlot ? "w-6 bg-cyan" : "w-1.5 bg-white/15 hover:bg-white/30"
+                  i === frontSlot ? "w-6 bg-white" : "w-1.5 bg-white/20 hover:bg-white/40"
                 }`}
               />
             ))}

@@ -10,16 +10,11 @@ import Certificates from "./components/Certificates";
 import Services from "./components/Services";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
-import Cursor from "./components/ui/Cursor";
 import { useDeviceCapability } from "./hooks/useDeviceCapability";
 
-const LOAD_DURATION = 1700;
-const LOAD_STATUS = [
-  "booting interface",
-  "compiling scene",
-  "calibrating light",
-  "ready",
-];
+const LOAD_DURATION = 2000;
+const LOAD_STATUS = ["booting interface", "loading assets", "polishing pixels", "ready"];
+const WORD = "JEYSIDEV";
 
 function LoadScreen({ prefersReducedMotion }) {
   const [progress, setProgress] = useState(0);
@@ -29,8 +24,9 @@ function LoadScreen({ prefersReducedMotion }) {
     let raf;
     const tick = (now) => {
       const pct = Math.min((now - start) / LOAD_DURATION, 1);
-      // ease-out cubic so the last stretch settles instead of ticking evenly
-      setProgress(Math.round((1 - Math.pow(1 - pct, 3)) * 100));
+      // ease-in-out so the fill accelerates, then settles at 100
+      const eased = pct < 0.5 ? 2 * pct * pct : 1 - Math.pow(-2 * pct + 2, 2) / 2;
+      setProgress(Math.round(eased * 100));
       if (pct < 1) raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
@@ -42,72 +38,66 @@ function LoadScreen({ prefersReducedMotion }) {
     Math.floor((progress / 100) * LOAD_STATUS.length)
   );
 
+  const wordClass =
+    "absolute inset-0 flex items-center justify-center whitespace-nowrap font-display text-[19vw] font-bold leading-none tracking-tighter";
+
   return (
     <motion.div
       key="loader"
-      initial={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: { duration: 0.5, ease: "easeInOut" } }}
-      className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-void"
+      initial={{ y: 0 }}
+      exit={{
+        y: "-100%",
+        transition: { duration: prefersReducedMotion ? 0.2 : 0.9, ease: [0.76, 0, 0.24, 1] },
+      }}
+      role="status"
+      aria-label="Loading"
+      className="fixed inset-0 z-[100] overflow-hidden bg-void"
     >
-      {/* Ambient glow so the panel doesn't sit on flat black */}
-      <div className="pointer-events-none absolute inset-0 bg-void-radial" />
-      <motion.div
-        className="pointer-events-none absolute h-[420px] w-[420px] rounded-full bg-signal-gradient opacity-[0.12] blur-[100px]"
-        animate={
-          prefersReducedMotion
-            ? undefined
-            : { scale: [1, 1.15, 1], opacity: [0.1, 0.16, 0.1] }
-        }
-        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-      />
+      <div className="hero-grid pointer-events-none absolute inset-0" />
 
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -6, transition: { duration: 0.3 } }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="relative flex flex-col items-center"
-      >
-        {/* Monogram mark */}
-        <div className="relative mb-6 flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl">
-          <motion.div
-            className="absolute inset-[-30%] bg-signal-gradient"
-            animate={prefersReducedMotion ? undefined : { rotate: 360 }}
-            transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
-          />
-          <div className="absolute inset-[1px] rounded-2xl bg-void" />
-          <span className="relative font-display text-xl text-ink">JD</span>
-        </div>
-
-        <div className="font-display text-2xl tracking-tight text-ink">
+      {/* Top bar */}
+      <div className="absolute inset-x-0 top-0 flex items-center justify-between px-6 py-6 font-mono text-[11px] uppercase tracking-[0.2em] text-white/50 sm:px-10">
+        <span>
           JeysiDev<span className="text-cyan">.</span>
-        </div>
+        </span>
+        <span>Portfolio &mdash; {new Date().getFullYear()}</span>
+      </div>
 
-        {/* Progress bar */}
-        <div className="mt-6 h-px w-40 overflow-hidden rounded-full bg-surface-line">
-          <motion.div
-            className="h-full bg-signal-gradient"
-            style={{ width: `${progress}%` }}
-            transition={{ ease: "linear" }}
-          />
+      {/* Wordmark: outline underneath, solid white revealed from the bottom up */}
+      <div className="absolute inset-x-0 top-1/2 h-[24vw] -translate-y-1/2" aria-hidden="true">
+        <div
+          className={`${wordClass} text-transparent`}
+          style={{ WebkitTextStroke: "1.5px rgb(var(--c-fg) / 0.35)" }}
+        >
+          {WORD}
         </div>
+        <div
+          className={`${wordClass} text-white`}
+          style={{ clipPath: `inset(${100 - progress}% 0 0 0)` }}
+        >
+          {WORD}
+        </div>
+      </div>
 
-        <div className="mt-3 flex items-center gap-3 font-mono text-[11px] uppercase tracking-wide text-ink-faint">
-          <span className="text-cyan">{LOAD_STATUS[statusIndex]}</span>
-          <span className="tabular-nums text-ink-muted">{progress}%</span>
+      {/* Bottom bar: status + counter */}
+      <div className="absolute inset-x-0 bottom-0 flex items-end justify-between px-6 pb-6 sm:px-10 sm:pb-8">
+        <div className="font-mono text-[11px] uppercase tracking-[0.2em]">
+          <p className="text-cyan">{LOAD_STATUS[statusIndex]}</p>
+          <div className="mt-3 h-px w-28 bg-white/15 sm:w-48">
+            <div className="h-full bg-white" style={{ width: `${progress}%` }} />
+          </div>
         </div>
-      </motion.div>
+        <p className="font-display text-6xl font-medium leading-none tabular-nums text-white sm:text-8xl">
+          {String(progress).padStart(3, "0")}
+        </p>
+      </div>
     </motion.div>
   );
 }
 
 export default function App() {
   const [loading, setLoading] = useState(true);
-  const { isTouch, hasFinePointer, prefersReducedMotion } = useDeviceCapability();
-  // Gate on pointer type, not viewport width — width-based checks flip with
-  // browser zoom, which would show/hide the cursor just because the page
-  // was zoomed rather than because the input device actually changed.
-  const showCustomCursor = hasFinePointer && !isTouch && !prefersReducedMotion;
+  const { prefersReducedMotion } = useDeviceCapability();
 
   useEffect(() => {
     const timer = setTimeout(
@@ -123,11 +113,9 @@ export default function App() {
         {loading && <LoadScreen prefersReducedMotion={prefersReducedMotion} />}
       </AnimatePresence>
 
-      {showCustomCursor && <Cursor />}
-
       <Navbar />
       <main>
-        <Hero />
+        <Hero ready={!loading} />
         <About />
         <Skills />
         <Projects />

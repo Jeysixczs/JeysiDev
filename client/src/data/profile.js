@@ -10,13 +10,15 @@ export const profile = {
     "I mostly work with C#, .NET, Unity, Web Development, and Mobile Applications and I like exploring beyond the basics — from building an offline AI chatbot to a client-side manga reader and a C#/.NET survival game. I care about clean, readable code and interfaces that feel good to use.",
   ],
   avatar: "/profile/avatar.jpg",
+  heroImage: "/profile/hero.png",
+  heroTech: ["C#", ".NET", "Unity", "React", "Firebase"],
   resumeUrl: "/resume.pdf",
   email: "johncarloaquino205@gmail.com",
   stats: [
     { label: "Years building for the web", value: 2, suffix: "+" },
-    { label: "Shipped projects", value: 6, suffix: "+" },
+    { label: "Shipped projects", value: 8, suffix: "+" },
     { label: "Languages & tools", value: 10, suffix: "+" },
-    { label: "Certifications earned", value: 3, suffix: "" },
+    { label: "Certifications earned", value: 4, suffix: "" },
   ],
   socials: [
     { label: "GitHub", href: "https://github.com/Jeysixczs", icon: "github" },

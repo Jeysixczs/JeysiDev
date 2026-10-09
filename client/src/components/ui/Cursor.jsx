@@ -96,9 +96,9 @@ export default function Cursor() {
         style={{
           width: ringSize,
           height: ringSize,
-          borderColor: cursorState === "default" ? "rgba(232,236,244,0.35)" : "rgba(61,218,215,0.7)",
+          borderColor: cursorState === "default" ? "rgb(var(--c-ink) / 0.35)" : "rgb(var(--c-cyan) / 0.7)",
           backgroundColor:
-            cursorState === "default" ? "transparent" : "rgba(61,218,215,0.08)",
+            cursorState === "default" ? "transparent" : "rgb(var(--c-cyan) / 0.08)",
         }}
       >
         {ringLabel && (

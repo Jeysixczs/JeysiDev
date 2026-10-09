@@ -9,27 +9,7 @@ export const projects = [
     tech: ["HTML5", "CSS3", "JavaScript"],
     image: "/projects/Jeysidev.png",
     github: "https://github.com/Jeysixczs/JeysiDev",
-    demo: "https://jeysi-dev.vercel.app/",
-  },
-  {
-    id: "chat-with-carlo",
-    title: "Chat With Carlo",
-    description:
-      "An offline AI chatbot built on the Gemini database, designed to hold conversations with users by leveraging locally stored data without needing an internet connection.",
-    tech: ["HTML5", "CSS3", "JavaScript", "Node.js", "Database"],
-    image: "/projects/ChatCarlo.png",
-    github: "https://github.com/Jeysixczs/Chat-with-Carlo",
-    demo: "https://jeysixczs.github.io/Chat-with-Carlo/",
-  },
-  {
-    id: "removify",
-    title: "Removify",
-    description:
-      "A background remover that transforms photos in the browser — upload an image and AI-powered processing precisely removes the background, leaving a clean result.",
-    tech: ["HTML5", "CSS3", "JavaScript"],
-    image: "/projects/removify.png",
-    github: "https://github.com/Jeysixczs/Removify",
-    demo: "https://jeysixczs.github.io/Removify/",
+    demo: "https://jeysidev.vercel.app/",
   },
   {
     id: "survival-rush",
@@ -68,6 +48,7 @@ export const projects = [
     tech: ["Windows Forms", "HTML5", "C#", "Swagger", "SqlServer", ".Net", "MVP Structure"],
     image: "/projects/Sarisync.png",
     github: "https://github.com/Jeysixczs/SariSync.png",
+    demo: "https://sarisync-jet.vercel.app/login",
   },
   {
     id: "GogetCash",
@@ -77,6 +58,7 @@ export const projects = [
     tech: ["Android Studio", "Kotlin"],
     image: "/projects/GogetCash.png",
     github: "https://github.com/Jeysixczs/GoGetCash",
+    demo: "https://gogetcash.vercel.app",
   },
 
 ];

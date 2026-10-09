@@ -1,84 +1,59 @@
 import { motion } from "framer-motion";
 import SectionHeading from "./ui/SectionHeading";
-import TiltCard from "./ui/TiltCard";
 import { services } from "../data/services";
 
-function ServiceCard({ service }) {
-  return (
-    <TiltCard
-      className={`glass-panel h-full rounded-3xl p-6 ${
-        service.size === "lg" ? "sm:p-9" : "sm:p-7"
-      }`}
-    >
-      <h3
-        className={`font-display text-ink ${
-          service.size === "lg" ? "text-2xl sm:text-3xl" : "text-xl"
-        }`}
-      >
-        {service.title}
-      </h3>
-      <p className="mt-3 max-w-md text-sm leading-relaxed text-ink-muted sm:text-base">
-        {service.description}
-      </p>
-      <ul className="mt-5 flex flex-wrap gap-2">
-        {service.tags.map((tag) => (
-          <li
-            key={tag}
-            className="rounded-full border border-white/10 px-2.5 py-1 font-mono text-[11px] text-ink-faint"
-          >
-            {tag}
-          </li>
-        ))}
-      </ul>
-    </TiltCard>
-  );
-}
-
+/**
+ * One list for every breakpoint. Each row inverts to white on hover — it's
+ * the one interactive flourish in an otherwise static section.
+ */
 export default function Services() {
   return (
-    <section id="services" className="relative border-t border-white/[0.05] py-3 sm:py-28">
+    <section id="services" className="relative border-t border-white/10 py-20 sm:py-28 lg:py-36">
       <div className="section-shell">
         <SectionHeading
           index="06"
+          label="Services"
           title="What I can take off your plate"
           description="From a single interface component to the whole stack behind it."
         />
 
-        {/* Phone: swipeable, snap-scrolling carousel — one card front and
-           center at a time, instead of a stacked or paired grid. */}
-        <div className="relative -mx-6 sm:hidden">
-          <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {services.map((service, i) => (
-              <motion.div
-                key={service.title}
-                initial={{ opacity: 0, x: 24 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.4, delay: i * 0.05 }}
-                className="w-[82%] flex-shrink-0 snap-center first:ml-0"
-              >
-                <ServiceCard service={service} />
-              </motion.div>
-            ))}
-          </div>
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-void to-transparent" />
-        </div>
-
-        {/* Tablet & up: original bento grid */}
-        <div className="hidden gap-5 sm:grid sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="border-t border-white/10">
           {services.map((service, i) => (
-            <motion.div
+            <motion.li
               key={service.title}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.5, delay: i * 0.05 }}
-              className={service.size === "lg" ? "sm:col-span-2 lg:col-span-2" : "lg:col-span-1"}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.45, delay: Math.min(i, 4) * 0.05 }}
+              className="group -mx-4 border-b border-white/10 px-4 transition-colors duration-300 hover:bg-white sm:-mx-6 sm:px-6"
             >
-              <ServiceCard service={service} />
-            </motion.div>
+              <div className="grid items-baseline gap-3 py-7 sm:grid-cols-[56px_1fr] lg:grid-cols-[56px_minmax(0,1fr)_minmax(0,1.2fr)_240px] lg:gap-10">
+                <span className="font-mono text-xs text-white/40 transition-colors duration-300 group-hover:text-void/50">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+
+                <h3 className="font-display text-2xl text-white transition-colors duration-300 group-hover:text-void sm:text-3xl">
+                  {service.title}
+                </h3>
+
+                <p className="text-base leading-relaxed text-white/55 transition-colors duration-300 group-hover:text-void/70 sm:col-start-2 lg:col-start-auto">
+                  {service.description}
+                </p>
+
+                <ul className="flex flex-wrap gap-2 sm:col-start-2 lg:col-start-auto lg:max-w-[220px] lg:justify-end">
+                  {service.tags.map((tag) => (
+                    <li
+                      key={tag}
+                      className="rounded-full border border-white/20 px-2.5 py-1 font-mono text-[11px] text-white/60 transition-colors duration-300 group-hover:border-void/30 group-hover:text-void/70"
+                    >
+                      {tag}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </motion.li>
           ))}
-        </div>
+        </ul>
       </div>
     </section>
   );

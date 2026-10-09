@@ -2,6 +2,61 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ------------------------------------------------------------------
+   Theme tokens. Colours are stored as bare RGB channels so Tailwind can
+   apply opacity (bg-white/10 etc). Dark is the default; light overrides
+   below. `--c-fg` / `--c-bg` are deliberately inverted between themes:
+   everything that was "white on near-black" becomes "near-black on
+   off-white" automatically.
+------------------------------------------------------------------- */
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --c-fg: 255 255 255;
+  --c-bg: 6 8 15;
+  --c-bg-soft: 10 13 24;
+  --c-surface: 13 18 32;
+  --c-surface-raised: 19 26 44;
+  --c-surface-line: 30 39 64;
+  --c-ink: 232 236 244;
+  --c-ink-muted: 136 145 167;
+  --c-ink-faint: 82 92 117;
+  --c-cyan: 61 218 215;
+  --c-cyan-soft: 127 240 236;
+  --hero-spot: 0.14;
+  --hero-shadow: 0.75;
+  --cert-glow: rgba(255, 255, 255, 0.45);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --c-fg: 11 16 32;
+  --c-bg: 246 247 251;
+  --c-bg-soft: 238 240 246;
+  --c-surface: 255 255 255;
+  --c-surface-raised: 238 240 246;
+  --c-surface-line: 217 221 232;
+  --c-ink: 11 16 32;
+  --c-ink-muted: 90 100 122;
+  --c-ink-faint: 138 147 168;
+  --c-cyan: 8 145 142;
+  --c-cyan-soft: 14 165 162;
+  --hero-spot: 0.07;
+  --hero-shadow: 0.28;
+  --cert-glow: rgba(11, 16, 32, 0.28);
+}
+
+/* Applied for ~400ms when the user toggles the theme, so colours cross-fade
+   instead of snapping. Not left on permanently: a global transition would
+   fight framer-motion and every component's own hover transitions. */
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease,
+    fill 0.35s ease, stroke 0.35s ease !important;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -18,12 +73,12 @@
   }
 
   ::selection {
-    background-color: #3ddad7;
-    color: #06080f;
+    background-color: rgb(var(--c-fg));
+    color: rgb(var(--c-bg));
   }
 
   body {
-    background-color: #06080f;
+    background-color: rgb(var(--c-bg));
   }
 
   h1, h2, h3, h4 {
@@ -36,7 +91,7 @@
   button:focus-visible,
   input:focus-visible,
   textarea:focus-visible {
-    outline: 2px solid #3ddad7;
+    outline: 2px solid rgb(var(--c-fg));
     outline-offset: 3px;
     border-radius: 2px;
   }
@@ -51,17 +106,18 @@
       transition-duration: 0.001ms !important;
     }
   }
-
-  /* Hides the native pointer while the custom cursor (Cursor.jsx) is
-     mounted. The !important beats any inline cursor style set by
-     hover handlers (e.g. the 3D scene's pointer-over cursor: pointer). */
-  html.custom-cursor-active,
-  html.custom-cursor-active * {
-    cursor: none !important;
-  }
 }
 
 @layer components {
+  .hero-grid {
+    background-image:
+      linear-gradient(to right, rgb(var(--c-fg) / 0.045) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(var(--c-fg) / 0.045) 1px, transparent 1px);
+    background-size: 56px 56px;
+    -webkit-mask-image: radial-gradient(ellipse 80% 70% at 60% 45%, #000 20%, transparent 78%);
+    mask-image: radial-gradient(ellipse 80% 70% at 60% 45%, #000 20%, transparent 78%);
+  }
+
   .section-shell {
     @apply mx-auto w-full max-w-6xl px-6 sm:px-8 lg:px-10;
   }
@@ -72,7 +128,7 @@
 
   /* Same look as .glass-panel but without backdrop-filter. Everywhere
      this site uses glass panels sits on a flat, textureless background
-     (body is a solid #06080F, no gradient or moving content behind
+     (body is a flat theme background, no gradient or moving content behind
      sections), so blurring "behind" the card blurs nothing and only
      costs a repaint. That cost is negligible for the one or two panels
      other sections show at a time, but the skills grid renders 8-11
@@ -84,12 +140,23 @@
     @apply border border-white/[0.06] bg-surface;
   }
 
+  /* Hero portrait shadow: heavy on dark, softened on light. */
+  .hero-portrait {
+    filter: drop-shadow(0 24px 40px rgba(0, 0, 0, var(--hero-shadow)));
+  }
+
   .eyebrow-index {
-    @apply font-mono text-xs tracking-tight text-cyan/80;
+    @apply font-mono text-xs tracking-tight text-white/50;
   }
 
   .btn-primary {
     @apply relative inline-flex items-center justify-center gap-2 rounded-full bg-signal-gradient
+      px-7 py-3 font-display text-sm font-medium text-[#06080F] transition-transform duration-300
+      hover:scale-[1.03] active:scale-[0.94] [touch-action:manipulation];
+  }
+
+  .btn-light {
+    @apply relative inline-flex items-center justify-center gap-2 rounded-full bg-white
       px-7 py-3 font-display text-sm font-medium text-void transition-transform duration-300
       hover:scale-[1.03] active:scale-[0.94] [touch-action:manipulation];
   }
@@ -97,21 +164,21 @@
   .btn-ghost {
     @apply inline-flex items-center justify-center gap-2 rounded-full border border-white/15
       px-7 py-3 font-display text-sm font-medium text-ink transition-all duration-300
-      hover:border-cyan/60 hover:text-cyan active:scale-[0.94] [touch-action:manipulation];
+      hover:border-white hover:bg-white hover:text-void active:scale-[0.94] [touch-action:manipulation];
   }
 }
 
-/* Custom scrollbar to match the void theme */
+/* Custom scrollbar, follows the active theme */
 ::-webkit-scrollbar {
   width: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: #06080f;
+  background: rgb(var(--c-bg));
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e2740;
+  background: rgb(var(--c-surface-line));
   border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3ddad7;
+  background: rgb(var(--c-fg));
 }

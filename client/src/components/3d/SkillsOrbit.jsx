@@ -243,7 +243,6 @@ export default function SkillsOrbit({ skills }) {
       onPointerMove={handlePointerMove}
       onPointerUp={endDrag}
       onPointerLeave={endDrag}
-      data-cursor="drag"
     >
       <Canvas camera={{ position: [0, 1.6, 6.5], fov: 45 }} dpr={[1, 1.75]}>
         <Suspense fallback={null}>

@@ -1,28 +1,35 @@
 import { motion } from "framer-motion";
 
 /**
- * `index` is a two-digit section marker (e.g. "02") — used because the
- * site sections genuinely are a numbered sequence a visitor scrolls through,
- * not decoration.
+ * Editorial section header: a mono "(01) LABEL ———" rule above a large
+ * display title. `index` is a two-digit marker because the sections really
+ * are a numbered sequence a visitor scrolls through, not decoration.
  */
-export default function SectionHeading({ index, title, description, align = "left" }) {
+export default function SectionHeading({ index, label, title, description }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className={`mb-14 flex flex-col gap-4 ${align === "center" ? "items-center text-center" : ""}`}
+      className="mb-12 sm:mb-16"
     >
-      <div className="flex items-center gap-3">
-        <span className="font-mono text-sm text-cyan">{index}</span>
-        <span className="h-px w-10 bg-surface-line" />
+      <div
+        className={`flex items-center gap-4 font-mono text-xs uppercase tracking-[0.2em] text-white/50`}
+      >
+        <span>({index})</span>
+        <span>{label}</span>
+        <span className={`h-px flex-1 bg-white/15`} />
       </div>
-      <h2 className="max-w-2xl font-display text-3xl font-medium text-ink sm:text-4xl">
+      <h2
+        className={`mt-8 max-w-4xl font-display text-4xl font-medium leading-[1.05] sm:text-6xl text-white`}
+      >
         {title}
       </h2>
       {description && (
-        <p className="max-w-lg text-base text-ink-muted">{description}</p>
+        <p className={`mt-6 max-w-lg text-base sm:text-lg text-white/55`}>
+          {description}
+        </p>
       )}
     </motion.div>
   );

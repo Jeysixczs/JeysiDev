@@ -138,7 +138,6 @@ export default function ContactOrb() {
       onPointerMove={handlePointerMove}
       onPointerUp={endDrag}
       onPointerLeave={endDrag}
-      data-cursor="drag"
     >
       <Canvas camera={{ position: [0, 0, 5], fov: 45 }} dpr={[1, 1.75]}>
         <ambientLight intensity={0.5} />

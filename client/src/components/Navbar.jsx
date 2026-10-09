@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { profile } from "../data/profile";
 import { MenuIcon, CloseIcon } from "./ui/icons";
+import ThemeToggle from "./ui/ThemeToggle";
+import { useTheme } from "../hooks/useTheme";
 
 const LINKS = [
   { id: "home", label: "Home" },
@@ -18,6 +20,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     function onScroll() {
@@ -116,20 +119,26 @@ export default function Navbar() {
           ))}
         </ul>
 
-        <button
-          onClick={() => handleNavClick("contact")}
-          className="hidden rounded-full border border-white/15 px-5 py-2 text-sm text-ink transition-colors hover:border-cyan/60 hover:text-cyan md:inline-flex"
-        >
-          Let's talk
-        </button>
+        <div className="hidden items-center gap-3 md:flex">
+          <ThemeToggle theme={theme} onToggle={toggleTheme} className="!h-9 !w-9" />
+          <button
+            onClick={() => handleNavClick("contact")}
+            className="rounded-full border border-white/15 px-5 py-2 text-sm text-ink transition-colors hover:border-white hover:bg-white hover:text-void"
+          >
+            Let's talk
+          </button>
+        </div>
 
-        <button
-          className="text-ink md:hidden"
-          onClick={() => setOpen((v) => !v)}
-          aria-label="Toggle menu"
-        >
-          {open ? <CloseIcon /> : <MenuIcon />}
-        </button>
+        <div className="flex items-center gap-3 md:hidden">
+          <ThemeToggle theme={theme} onToggle={toggleTheme} className="!h-9 !w-9" />
+          <button
+            className="text-ink"
+            onClick={() => setOpen((v) => !v)}
+            aria-label="Toggle menu"
+          >
+            {open ? <CloseIcon /> : <MenuIcon />}
+          </button>
+        </div>
       </nav>
 
       <AnimatePresence>
@@ -152,7 +161,7 @@ export default function Navbar() {
                   <button
                     onClick={() => handleNavClick(link.id)}
                     className={`w-full rounded-lg px-3 py-3 text-left text-base transition-transform active:scale-[0.97] [touch-action:manipulation] ${
-                      activeSection === link.id ? "text-cyan" : "text-ink-muted"
+                      activeSection === link.id ? "text-white" : "text-white/60"
                     }`}
                   >
                     {link.label}

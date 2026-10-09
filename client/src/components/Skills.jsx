@@ -4,38 +4,29 @@ import VelocityRow from "./ui/VelocityRow";
 import { useDeviceCapability } from "../hooks/useDeviceCapability";
 import { skills } from "../data/skills";
 
-// hex feeds the little category dot on each chip.
-const CATEGORY_META = {
-  Language: { hex: "#3DDAD7" },
-  Frontend: { hex: "#8B6BFF" },
-  Backend: { hex: "#FFB347" },
-  "3D / Graphics": { hex: "#3DDAD7" },
-  Tooling: { hex: "#8B6BFF" },
-  Database: { hex: "#FFB347" },
-};
-const DEFAULT_META = { hex: "#3DDAD7" };
+// Alternating rows scroll in opposite directions, and alternate between
+// solid and outlined type, so the section reads as stacked lanes of
+// poster typography rather than a flat strip of chips.
+const ROW_COUNT = 3;
+const BASE_SPEED = 1.2; // %/sec of one copy, constant — unaffected by scrolling
 
-// How many marquee rows to lay the skills into. Alternating rows scroll
-// in opposite resting directions (row 0 left, row 1 right, row 2 left,
-// ...) so the section reads as a stack of counter-moving lanes rather
-// than one flat strip.
-const ROW_COUNT = 4 ;
-const BASE_SPEED = 1; // px/sec, constant — unaffected by scrolling
-
-function SkillChip({ skill }) {
-  const meta = CATEGORY_META[skill.category] || DEFAULT_META;
+function SkillWord({ skill, outline }) {
   return (
-    <div className="glass-panel-static mx-2 flex flex-none items-center gap-2.5 rounded-full border px-5 py-2.5">
+    <span className="flex flex-none items-start gap-3 pr-10 sm:pr-16">
       <span
-        className="h-2 w-2 shrink-0 rounded-full"
-        style={{ backgroundColor: meta.hex, boxShadow: `0 0 8px ${meta.hex}` }}
-        aria-hidden="true"
-      />
-      <span className="font-display text-sm text-ink">{skill.name}</span>
-      <span className="font-mono text-[10px] uppercase tracking-wide text-ink-faint">
-        {skill.category}
+        className="font-display text-6xl font-bold uppercase leading-[1.05] tracking-tighter sm:text-8xl"
+        style={
+          outline
+            ? { color: "transparent", WebkitTextStroke: "1.5px rgb(var(--c-fg) / 0.7)" }
+            : { color: "rgb(var(--c-fg))" }
+        }
+      >
+        {skill.name}
       </span>
-    </div>
+      <sup className="mt-3 font-mono text-[10px] uppercase tracking-[0.2em] text-white/40 sm:mt-5">
+        {skill.category}
+      </sup>
+    </span>
   );
 }
 
@@ -51,35 +42,34 @@ export default function Skills() {
   }, []);
 
   return (
-    <section id="skills" className="relative border-t border-white/[0.05] py-3 sm:py-28">
+    <section id="skills" className="relative overflow-hidden border-t border-white/10 py-20 sm:py-28 lg:py-36">
       <div className="section-shell">
         <SectionHeading
           index="02"
+          label="Skills"
           title="Tools I reach for"
           description="The languages, frameworks, and tools I use day to day."
         />
+      </div>
 
-        <div
-          className="-mx-6 flex flex-col gap-4 sm:-mx-8 lg:-mx-10"
-          style={{
-            maskImage:
-              "linear-gradient(to right, transparent, black 6%, black 94%, transparent)",
-            WebkitMaskImage:
-              "linear-gradient(to right, transparent, black 6%, black 94%, transparent)",
-          }}
-        >
-          {rows.map((row, i) => (
-            <VelocityRow
-              key={i}
-              baseVelocity={i % 2 === 0 ? -BASE_SPEED : BASE_SPEED}
-              paused={prefersReducedMotion}
-            >
-              {row.map((skill) => (
-                <SkillChip key={skill.name} skill={skill} />
-              ))}
-            </VelocityRow>
-          ))}
-        </div>
+      <div
+        className="flex flex-col gap-2 sm:gap-4"
+        style={{
+          maskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
+          WebkitMaskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
+        }}
+      >
+        {rows.map((row, i) => (
+          <VelocityRow
+            key={i}
+            baseVelocity={i % 2 === 0 ? -BASE_SPEED : BASE_SPEED}
+            paused={prefersReducedMotion}
+          >
+            {row.map((skill) => (
+              <SkillWord key={skill.name} skill={skill} outline={i % 2 === 1} />
+            ))}
+          </VelocityRow>
+        ))}
       </div>
     </section>
   );

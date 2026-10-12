@@ -16,12 +16,6 @@ export const services = [
     size: "lg",
   },
   {
-    title: "Chatbots & AI Integrations",
-    description: "Conversational tools built around AI databases, like an offline chatbot powered by Gemini.",
-    tags: ["JavaScript", "Node.js", "AI"],
-    size: "sm",
-  },
-  {
     title: "Game Development",
     description: "Gameplay and combat systems built in C# with a clean MVP structure.",
     tags: ["C#", ".NET", "MVP"],

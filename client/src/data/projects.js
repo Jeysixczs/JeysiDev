@@ -21,33 +21,13 @@ export const projects = [
     github: "https://github.com/Jeysixczs/Shooting-Game",
   },
   {
-    id: "qr-code-generator",
-    title: "QR Code Generator",
-    description:
-      "A tool that creates scannable QR codes from user input — URLs, text, or contact details — for quick access to websites, payments, and business information.",
-    tech: ["HTML5", "CSS3", "JavaScript"],
-    image: "/projects/qrcodes.png",
-    github: "https://github.com/Jeysixczs/Qr-Code-Generator",
-    demo: "https://jeysixczs.github.io/Qr-Code-Generator/",
-  },
-  {
-    id: "carlo-scan",
-    title: "Carlo Scan",
-    description:
-      "A minimalist, client-side manga reading experience built around the MangaDex API — zero backend, full CORS integration, streaming manga straight to the browser with no logins.",
-    tech: ["HTML5", "CSS3", "JavaScript", "CORS Proxy"],
-    image: "/projects/carloscan.png",
-    github: "https://github.com/Jeysixczs/Manga-ni-Carlo",
-    demo: "https://carloscan.vercel.app",
-  },
-  {
     id: "SariSync",
     title: "SariSync",
     description:
       "A Desktop Application for Point of Sale (POS) and inventory management system for sari-sari stores, built with Windows Forms. It allows store owners to track stock levels, sales, and generate reports.",
     tech: ["Windows Forms", "HTML5", "C#", "Swagger", "SqlServer", ".Net", "MVP Structure"],
     image: "/projects/Sarisync.png",
-    github: "https://github.com/Jeysixczs/SariSync.png",
+    github: "https://github.com/Jeysixczs/SariSync",
     demo: "https://sarisync-jet.vercel.app/login",
   },
   {
@@ -60,5 +40,36 @@ export const projects = [
     github: "https://github.com/Jeysixczs/GoGetCash",
     demo: "https://gogetcash.vercel.app",
   },
+  {
+    id: "KitsuneWave",
+    title: "KitsuneWave",
+    description:
+    "A anime streaming website that allows users to watch anime online. It features a user-friendly interface, a wide selection of anime titles, and the ability to search for specific shows.",
+    tech: ["React", "HTML", "CSS3", "JavaScript", "Node.js"],
+    image: "/projects/KitsuneWave.png",
+    github: "https://github.com/Jeysixczs/KitsuneWave",
+    demo: "https://kitsunewave.vercel.app",
+  },
+  {
+    id: "KitsuneScan",
+    title: "KitsuneScan",
+    description:
+    "A manga reading website that allows users to read manga online. It features a user-friendly interface, a wide selection of manga titles, and the ability to search for specific manga.",
+    tech: ["React", "HTML", "CSS3", "JavaScript", "Node.js"],
+    image: "/projects/KitsuneScan.png",
+    github: "https://github.com/Jeysixczs/KitsuneScan",
+    demo: "https://kitsunescan.vercel.app",
+  },
+  {
+    id: "Anatomia",
+    title: "Anatomia",
+    description:
+    "Anatomia is a web application that provides users with a comprehensive understanding of human anatomy. It features interactive 3D models, detailed descriptions, and quizzes to enhance learning.",
+    tech: ["React", "Three.js", "HTML5", "CSS3", "JavaScript"],
+    image: "/projects/Anatomia.png",
+    github: "https://github.com/Jeysixczs/Anatomixs",
+    demo: "https://anatomia-website.vercel.app/",
+  }
+
 
 ];

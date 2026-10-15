@@ -144,16 +144,7 @@ export default function Hero({ ready = true }) {
 
       {/* ── Copy: bottom-left on desktop, below the portrait on mobile ── */}
       <div className="relative z-20 px-6 pb-8 pt-2 sm:px-8 lg:absolute lg:bottom-24 lg:left-0 lg:max-w-[360px] lg:pb-0 lg:pl-10 xl:left-[max(2.5rem,calc((100vw-72rem)/2))]">
-        <motion.span
-          {...fadeUp(0.9)}
-          className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-3.5 py-1.5 font-mono text-xs text-white"
-        >
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan opacity-60" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-cyan" />
-          </span>
-          Open to opportunities
-        </motion.span>
+      
 
         <motion.h2 {...fadeUp(1)} className="font-display text-2xl font-medium text-white sm:text-3xl">
           {profile.role}

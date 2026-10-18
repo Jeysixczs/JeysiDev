@@ -1,4 +1,5 @@
 import { profile } from "../data/profile";
+import { useResume } from "../context/ResumeContext";
 
 const NAV = [
   ["about", "About"],
@@ -18,6 +19,7 @@ function go(id) {
 }
 
 export default function Footer() {
+  const { openResume } = useResume();
   return (
     <footer className="relative overflow-hidden bg-void pt-16 sm:pt-20">
       <div className="section-shell grid gap-12 sm:grid-cols-[1.4fr_1fr_1fr]">
@@ -65,6 +67,15 @@ export default function Footer() {
                 </a>
               </li>
             ))}
+            <li>
+              <button
+                type="button"
+                onClick={openResume}
+                className="text-sm text-white/70 transition-colors hover:text-white"
+              >
+                Resume
+              </button>
+            </li>
           </ul>
         </div>
       </div>

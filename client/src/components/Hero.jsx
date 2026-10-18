@@ -1,11 +1,12 @@
 import { motion } from "framer-motion";
-import { iconMap, ArrowUpRightIcon } from "./ui/icons";
+import { iconMap, ArrowUpRightIcon, FileTextIcon } from "./ui/icons";
 import { profile } from "../data/profile";
 import { skills } from "../data/skills";
 import { useMousePosition } from "../hooks/useMousePosition";
 import { useSmoothMouse } from "../hooks/useSmoothMouse";
 import { useParallax } from "../hooks/useParallax";
 import { useDeviceCapability } from "../hooks/useDeviceCapability";
+import { useResume } from "../context/ResumeContext";
 
 const ease = [0.22, 1, 0.36, 1];
 
@@ -70,6 +71,7 @@ function Ticker({ reduced }) {
 
 export default function Hero({ ready = true }) {
   const fadeUp = makeFadeUp(ready);
+  const { openResume } = useResume();
   const mouse = useMousePosition();
   const smoothMouse = useSmoothMouse(mouse, 0.08);
   const { isTouch, hasFinePointer, prefersReducedMotion } = useDeviceCapability();
@@ -167,6 +169,10 @@ export default function Hero({ ready = true }) {
           <a href="#contact" className="btn-ghost" onClick={scrollTo("contact")}>
             Contact me
           </a>
+          <button type="button" className="btn-ghost" onClick={openResume}>
+            <FileTextIcon width="16" height="16" />
+            Resume
+          </button>
         </motion.div>
 
         <motion.div {...fadeUp(1.3)} className="mt-5 lg:hidden">

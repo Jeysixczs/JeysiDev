@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { profile } from "../data/profile";
-import { MenuIcon, CloseIcon } from "./ui/icons";
+import { MenuIcon, CloseIcon, FileTextIcon } from "./ui/icons";
 import ThemeToggle from "./ui/ThemeToggle";
 import { useTheme } from "../hooks/useTheme";
+import { useResume } from "../context/ResumeContext";
 
 const LINKS = [
   { id: "home", label: "Home" },
@@ -21,6 +22,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const { theme, toggleTheme } = useTheme();
+  const { openResume } = useResume();
 
   useEffect(() => {
     function onScroll() {
@@ -122,6 +124,13 @@ export default function Navbar() {
         <div className="hidden items-center gap-3 md:flex">
           <ThemeToggle theme={theme} onToggle={toggleTheme} className="!h-9 !w-9" />
           <button
+            onClick={openResume}
+            className="inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-2 text-sm text-ink transition-colors hover:border-white hover:bg-white hover:text-void"
+          >
+            <FileTextIcon width="15" height="15" />
+            Resume
+          </button>
+          <button
             onClick={() => handleNavClick("contact")}
             className="rounded-full border border-white/15 px-5 py-2 text-sm text-ink transition-colors hover:border-white hover:bg-white hover:text-void"
           >
@@ -168,6 +177,22 @@ export default function Navbar() {
                   </button>
                 </motion.li>
               ))}
+              <motion.li
+                initial={{ opacity: 0, x: -16 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: LINKS.length * 0.05 }}
+              >
+                <button
+                  onClick={() => {
+                    setOpen(false);
+                    openResume();
+                  }}
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-3 text-left text-base text-white/60 transition-transform active:scale-[0.97] [touch-action:manipulation]"
+                >
+                  <FileTextIcon width="18" height="18" />
+                  Resume
+                </button>
+              </motion.li>
             </ul>
           </motion.div>
         )}

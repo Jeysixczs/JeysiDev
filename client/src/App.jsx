@@ -11,6 +11,7 @@ import Services from "./components/Services";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import { useDeviceCapability } from "./hooks/useDeviceCapability";
+import { ResumeProvider } from "./context/ResumeContext";
 
 const LOAD_DURATION = 2000;
 const LOAD_STATUS = ["booting interface", "loading assets", "polishing pixels", "ready"];
@@ -108,7 +109,7 @@ export default function App() {
   }, [prefersReducedMotion]);
 
   return (
-    <>
+    <ResumeProvider>
       <AnimatePresence>
         {loading && <LoadScreen prefersReducedMotion={prefersReducedMotion} />}
       </AnimatePresence>
@@ -125,6 +126,6 @@ export default function App() {
         <Contact />
       </main>
       <Footer />
-    </>
+    </ResumeProvider>
   );
 }

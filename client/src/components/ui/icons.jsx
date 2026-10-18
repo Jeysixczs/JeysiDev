@@ -105,3 +105,38 @@ export function MoonIcon(props) {
     </svg>
   );
 }
+
+export function DownloadIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="18" height="18" {...props}>
+      <path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function FileTextIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="18" height="18" {...props}>
+      <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z" strokeLinejoin="round" />
+      <path d="M14 3v5h5M9 13h6M9 17h6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function ZoomInIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="18" height="18" {...props}>
+      <circle cx="11" cy="11" r="6.5" />
+      <path d="m20 20-4.2-4.2M11 8.5v5M8.5 11h5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function ZoomOutIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="18" height="18" {...props}>
+      <circle cx="11" cy="11" r="6.5" />
+      <path d="m20 20-4.2-4.2M8.5 11h5" strokeLinecap="round" />
+    </svg>
+  );
+}

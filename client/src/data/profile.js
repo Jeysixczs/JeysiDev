@@ -12,7 +12,9 @@ export const profile = {
   avatar: "/profile/avatar.jpg",
   heroImage: "/profile/hero.png",
   heroTech: ["C#", ".NET", "Unity", "React", "Firebase"],
-  resumeUrl: "/resume.pdf",
+
+  resumeUrl: "/John-Carlo-Aquino-Resume.pdf",
+  resumeFileName: "John-Carlo-Aquino-Resume.pdf",
   email: "johncarloaquino205@gmail.com",
   stats: [
     { label: "Years building for the web", value: 2, suffix: "+" },

@@ -12,8 +12,8 @@ export const profile = {
   avatar: "/profile/avatar.jpg",
   heroImage: "/profile/hero.png",
   heroTech: ["C#", ".NET", "Unity", "React", "Firebase"],
-
-  resumeUrl: "/John-Carlo-Aquino-Resume.pdf",
+  // Drop your own PDF at public/resume.pdf to replace the generated one.
+  resumeUrl: "/resume.pdf",
   resumeFileName: "John-Carlo-Aquino-Resume.pdf",
   email: "johncarloaquino205@gmail.com",
   stats: [

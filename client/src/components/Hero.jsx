@@ -157,8 +157,12 @@ export default function Hero({ ready = true }) {
           {profile.tagline}
         </motion.p>
 
-        <motion.div {...fadeUp(1.2)} className="mt-6 flex flex-wrap items-center gap-3">
-          <a href="#projects" className="btn-light group" onClick={scrollTo("projects")}>
+        <motion.div {...fadeUp(1.2)} className="mt-6 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-center">
+          <a
+            href="#projects"
+            className="btn-light group col-span-2 border border-transparent sm:col-auto"
+            onClick={scrollTo("projects")}
+          >
             View my work
             <ArrowUpRightIcon
               width="16"
@@ -166,10 +170,14 @@ export default function Hero({ ready = true }) {
               className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
             />
           </a>
-          <a href="#contact" className="btn-ghost" onClick={scrollTo("contact")}>
+          <a
+            href="#contact"
+            className="btn-ghost px-4 sm:px-7"
+            onClick={scrollTo("contact")}
+          >
             Contact me
           </a>
-          <button type="button" className="btn-ghost" onClick={openResume}>
+          <button type="button" className="btn-ghost px-4 sm:px-7" onClick={openResume}>
             <FileTextIcon width="16" height="16" />
             Resume
           </button>

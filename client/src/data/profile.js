@@ -1,27 +1,35 @@
-// Edit this file to personalize the site — name, tagline, bio, stats, links.
+import { projects } from "./projects";
+import { certificates } from "./certificates";
+import { skills } from "./skills";
 
 export const profile = {
   name: "JeysiDev",
   role: "Front-End Developer",
-  tagline: "Creating interactive and responsive web experiences with modern technologies.",
+  tagline: "I build interactive, responsive, and user-friendly digital experiences with modern technologies.",
   location: "Plaridel, Bulacan, Philippines",
+
   bio: [
-    "I'm John Carlo Aquino, known online as JeysiDev — a Full Stack developer who enjoys turning ideas into interactive, responsive experiences on the web.",
-    "I mostly work with C#, .NET, Unity, Web Development, and Mobile Applications and I like exploring beyond the basics — from building an offline AI chatbot to a client-side manga reader and a C#/.NET survival game. I care about clean, readable code and interfaces that feel good to use.",
+    "I'm John Carlo Aquino, known online as JeysiDev. I'm a developer who enjoys turning ideas into functional applications and interactive, responsive web experiences.",
+
+    "I'm passionate about exploring different technologies and turning my ideas into real projects. I enjoy developing web and mobile applications, experimenting with C# and .NET, and creating interactive experiences with Unity. I'm always learning new skills, improving my coding abilities, and challenging myself to build projects that solve problems and provide a great user experience.",
   ],
+
   avatar: "/profile/avatar.jpg",
   heroImage: "/profile/hero.png",
-  heroTech: ["C#", ".NET", "Unity", "React", "Firebase"],
-  // Drop your own PDF at public/resume.pdf to replace the generated one.
+
   resumeUrl: "/resume.pdf",
   resumeFileName: "John-Carlo-Aquino-Resume.pdf",
   email: "johncarloaquino205@gmail.com",
+
+  // Counts are derived from the data files, so adding an entry to
+  // projects.js, skills.js or certificates.js updates the stats automatically.
   stats: [
     { label: "Years building for the web", value: 2, suffix: "+" },
-    { label: "Shipped projects", value: 8, suffix: "+" },
-    { label: "Languages & tools", value: 10, suffix: "+" },
-    { label: "Certifications earned", value: 4, suffix: "" },
+    { label: "Shipped projects", value: projects.length, suffix: "" },
+    { label: "Languages & tools", value: skills.length, suffix: "" },
+    { label: "Certifications earned", value: certificates.length, suffix: "" },
   ],
+
   socials: [
     { label: "GitHub", href: "https://github.com/Jeysixczs", icon: "github" },
     { label: "LinkedIn", href: "https://www.linkedin.com/in/john-carlo-9a63b6195/", icon: "linkedin" },

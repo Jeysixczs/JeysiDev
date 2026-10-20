@@ -107,7 +107,7 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="relative bg-surface py-20 text-white sm:py-28 lg:py-36">
+    <section id="contact" className="relative border-t border-white/10 py-20 sm:py-28 lg:py-36">
       <div className="section-shell">
         <SectionHeading
           index="07"

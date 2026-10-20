@@ -7,16 +7,4 @@ export default defineConfig({
   server: {
     port: 5173,
   },
-  build: {
-    // Split three.js / fiber into their own chunk so the initial
-    // JS payload for text content stays small.
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          three: ["three"],
-          fiber: ["@react-three/fiber", "@react-three/drei"],
-        },
-      },
-    },
-  },
 });

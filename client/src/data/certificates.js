@@ -25,11 +25,11 @@ export const certificates = [
   },
   {
     id: "certificate-4",
-    title: "Wadhwhani Title",
-    issuer: "Wadhwhani Organization",
-    date: "2024",
-    image: "/certificates/Wadhwani Foundation.png",
-    credentialUrl: "https://web.certificate.wfglobal.org/en/certificate?certificateId=69c741cd69092691cc112d0d",
+    title: "TypeScript Basic Certificate",
+    issuer: "SimpliLearn",
+    date: "2026",
+    image: "/certificates/TypeScript Basic.png",
+    credentialUrl: "https://simpli-web.app.link/e/x1gF59ZMm7b",
   },
   {
     id: "certificate-5",
@@ -39,5 +39,12 @@ export const certificates = [
     image: "/certificates/Cisco CyberSecurity.png",
     credentialUrl: "https://www.credly.com/badges/ad0440eb-a270-4de6-afe2-583daf194d00",
   },
- 
+  {
+    id: "certificate-6",
+    title: "Vibe Coding Certificate",
+    issuer: "Simplilearn",
+    date: "2026",
+    image: "/certificates/Vibe Coding.png",
+    credentialUrl: "https://simpli-web.app.link/e/zABrBGbon7b",
+  }
 ];

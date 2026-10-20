@@ -75,9 +75,7 @@ export default function Hero({ ready = true }) {
   const mouse = useMousePosition();
   const smoothMouse = useSmoothMouse(mouse, 0.08);
   const { isTouch, hasFinePointer, prefersReducedMotion } = useDeviceCapability();
-  // Pointer type, not viewport width — width-based checks flip when the
-  // page is zoomed, which would toggle mouse-parallax on/off just from
-  // zooming rather than from the actual input device changing.
+
   const coarsePointer = isTouch || !hasFinePointer;
   const [px, py] = useParallax(smoothMouse, {
     strength: 10,

@@ -134,7 +134,7 @@ export default function Navbar() {
             onClick={() => handleNavClick("contact")}
             className="rounded-full border border-white/15 px-5 py-2 text-sm text-ink transition-colors hover:border-white hover:bg-white hover:text-void"
           >
-            Let's talk
+            Let&apos;s talk
           </button>
         </div>
 

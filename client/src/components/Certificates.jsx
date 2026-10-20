@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence, useMotionValue, useTransform, animate } from "framer-motion";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence, useIsPresent, useMotionValue, useTransform, animate } from "framer-motion";
 import SectionHeading from "./ui/SectionHeading";
 import { CloseIcon, ChevronLeftIcon, ChevronRightIcon } from "./ui/icons";
 import { certificates } from "../data/certificates";
@@ -203,16 +203,50 @@ function Card3D({ certificate, i, position, config, isFront, onFrontClick, onSid
   );
 }
 
+const viewerBtn =
+  "absolute h-11 w-11 place-items-center rounded-full bg-void/70 text-white/80 backdrop-blur-sm transition-colors hover:text-white";
+
+const SWIPE_DISTANCE = 70; // px dragged before it counts as a swipe
+const SWIPE_VELOCITY = 450; // px/s flick that counts even on a short drag
+
 function CertificateViewer({ certificate, onClose, onPrev, onNext, hasMultiple }) {
+  // -1 = went to previous, 1 = went to next. Used to slide the new card in
+  // from the side you swiped toward.
+  const dirRef = useRef(0);
+
+  // False from the moment the viewer is told to close until it is actually
+  // removed. While false the overlay must not catch any touches, so the
+  // carousel underneath is usable immediately and can never be left blocked.
+  const isPresent = useIsPresent();
+
+  const goPrev = useCallback(() => {
+    dirRef.current = -1;
+    onPrev();
+  }, [onPrev]);
+
+  const goNext = useCallback(() => {
+    dirRef.current = 1;
+    onNext();
+  }, [onNext]);
+
   useEffect(() => {
     function onKeyDown(e) {
       if (e.key === "Escape") onClose();
-      if (e.key === "ArrowLeft") onPrev();
-      if (e.key === "ArrowRight") onNext();
+      if (e.key === "ArrowLeft") goPrev();
+      if (e.key === "ArrowRight") goNext();
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [onClose, onPrev, onNext]);
+  }, [onClose, goPrev, goNext]);
+
+  const currentIndex = certificates.findIndex((c) => c.id === certificate.id);
+
+  function handleDragEnd(_, info) {
+    if (!hasMultiple) return;
+    const { offset, velocity } = info;
+    if (offset.x <= -SWIPE_DISTANCE || velocity.x <= -SWIPE_VELOCITY) goNext();
+    else if (offset.x >= SWIPE_DISTANCE || velocity.x >= SWIPE_VELOCITY) goPrev();
+  }
 
   return (
     <motion.div
@@ -220,13 +254,15 @@ function CertificateViewer({ certificate, onClose, onPrev, onNext, hasMultiple }
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
-      className="fixed inset-0 z-[90] flex items-center justify-center bg-void/90 p-4 backdrop-blur-sm sm:p-8"
+      className={`fixed inset-0 z-[90] flex items-center justify-center bg-void/90 p-4 backdrop-blur-sm sm:p-8 ${
+        isPresent ? "" : "pointer-events-none"
+      }`}
       onClick={onClose}
     >
       <button
         onClick={onClose}
         aria-label="Close"
-        className="absolute right-4 top-4 text-white/70 transition-colors hover:text-white sm:right-8 sm:top-8"
+        className={`${viewerBtn} grid right-3 top-3 sm:right-8 sm:top-8`}
       >
         <CloseIcon />
       </button>
@@ -236,59 +272,87 @@ function CertificateViewer({ certificate, onClose, onPrev, onNext, hasMultiple }
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onPrev();
+              goPrev();
             }}
             aria-label="Previous certificate"
-            className="absolute left-2 top-1/2 -translate-y-1/2 text-white/70 transition-colors hover:text-white sm:left-6"
+            className={`${viewerBtn} hidden sm:left-6 sm:top-1/2 sm:grid sm:-translate-y-1/2`}
           >
             <ChevronLeftIcon />
           </button>
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onNext();
+              goNext();
             }}
             aria-label="Next certificate"
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-white/70 transition-colors hover:text-white sm:right-6"
+            className={`${viewerBtn} hidden sm:right-6 sm:top-1/2 sm:grid sm:-translate-y-1/2`}
           >
             <ChevronRightIcon />
           </button>
         </>
       )}
 
-      <motion.div
-        initial={{ scale: 0.96, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.96, opacity: 0 }}
-        transition={{ duration: 0.2 }}
-        onClick={(e) => e.stopPropagation()}
-        className="flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden border border-white/15 bg-surface"
-      >
-        <img
-          src={certificate.image}
-          alt={`${certificate.title} certificate`}
-          className="max-h-[65vh] w-full object-contain"
-          onError={(e) => {
-            e.currentTarget.src = FALLBACK_IMG;
-          }}
-        />
-        <div className="p-5">
-          <h3 className="font-display text-lg text-white">{certificate.title}</h3>
-          <p className="mt-1 text-sm text-white/60">
-            {certificate.issuer} &middot; {certificate.date}
-          </p>
-          {certificate.credentialUrl && (
-            <a
-              href={certificate.credentialUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-3 inline-block text-sm text-white underline underline-offset-4 hover:opacity-70"
-            >
-              Verify credential
-            </a>
-          )}
-        </div>
-      </motion.div>
+      <div className="flex w-full max-w-2xl flex-col items-center gap-4">
+        <motion.div
+          key={certificate.id}
+          initial={{ x: dirRef.current * 60, scale: 0.96, opacity: 0 }}
+          animate={{ x: 0, scale: 1, opacity: 1 }}
+          transition={{ duration: 0.2 }}
+          // Horizontal swipe to browse. framer-motion sets touch-action: pan-y
+          // for drag="x", so vertical scrolling inside the card still works.
+          drag={hasMultiple ? "x" : false}
+          dragDirectionLock
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.35}
+          onDragEnd={handleDragEnd}
+          onClick={(e) => e.stopPropagation()}
+          className="flex max-h-[80dvh] w-full max-w-2xl flex-col overflow-y-auto border border-white/15 bg-surface"
+        >
+          <img
+            src={certificate.image}
+            alt={`${certificate.title} certificate`}
+            className="max-h-[55dvh] w-full select-none object-contain"
+            draggable={false}
+            onError={(e) => {
+              e.currentTarget.src = FALLBACK_IMG;
+            }}
+          />
+          <div className="p-5">
+            <h3 className="font-display text-lg text-white">{certificate.title}</h3>
+            <p className="mt-1 text-sm text-white/60">
+              {certificate.issuer} &middot; {certificate.date}
+            </p>
+            {certificate.credentialUrl && (
+              <a
+                href={certificate.credentialUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-3 inline-block text-sm text-white underline underline-offset-4 hover:opacity-70"
+              >
+                Verify credential
+              </a>
+            )}
+          </div>
+        </motion.div>
+        {hasMultiple && (
+          <div
+            className="flex items-center justify-center gap-1.5"
+            role="img"
+            aria-label={`Certificate ${currentIndex + 1} of ${certificates.length}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {certificates.map((c, i) => (
+              <span
+                key={c.id}
+                aria-hidden="true"
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  i === currentIndex ? "w-5 bg-white" : "w-1.5 bg-white/30"
+                }`}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </motion.div>
   );
 }

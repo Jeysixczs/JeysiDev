@@ -3,21 +3,10 @@ import SectionHeading from "./ui/SectionHeading";
 import Counter from "./ui/Counter";
 import { profile } from "../data/profile";
 
-// Counts come straight from the public folder: drop a new image into
-// public/projects or public/certificates and the tile updates on rebuild.
-// (Non-eager glob: only the file list is read, nothing is bundled.)
-const countFiles = (files) => Object.keys(files).filter((f) => /\.(png|jpe?g|webp|svg)$/i.test(f)).length;
-const projectCount = countFiles(import.meta.glob("/public/projects/*"));
-const certificateCount = countFiles(import.meta.glob("/public/certificates/*"));
-
-const liveValues = {
-  "Shipped projects": projectCount,
-  "Certifications earned": certificateCount,
-};
-
 export default function About() {
   const [lead, ...rest] = profile.bio;
-  const stats = profile.stats.map((s) => ({ ...s, value: liveValues[s.label] ?? s.value }));
+  // Stat values (projects, skills, certificates) are computed from the data files in profile.js
+  const stats = profile.stats;
 
   return (
     <section id="about" className="relative border-t border-white/10 py-20 sm:py-28 lg:py-36">

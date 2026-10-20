@@ -79,7 +79,11 @@ export default function ResumeViewer({ onClose }) {
       try {
         const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
         pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
-        loadingTask = pdfjs.getDocument({ url: profile.resumeUrl });
+        // ERRORS only: hides harmless font-hinting warnings such as "TT: undefined function".
+        loadingTask = pdfjs.getDocument({
+          url: profile.resumeUrl,
+          verbosity: pdfjs.VerbosityLevel.ERRORS,
+        });
         const pdf = await loadingTask.promise;
         if (cancelled) return;
         setDoc(pdf);

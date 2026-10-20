@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { profile } from "../data/profile";
 import { MenuIcon, CloseIcon, FileTextIcon } from "./ui/icons";
@@ -23,13 +23,33 @@ export default function Navbar() {
   const [activeSection, setActiveSection] = useState("home");
   const { theme, toggleTheme } = useTheme();
   const { openResume } = useResume();
+  const headerRef = useRef(null);
 
   useEffect(() => {
     function onScroll() {
       setScrolled(window.scrollY > 24);
     }
-    window.addEventListener("scroll", onScroll);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // The mobile menu must never be left open once the full desktop nav is
+  // showing (e.g. rotating a tablet), and Escape should close it.
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 1280px)");
+    function onChange(e) {
+      if (e.matches) setOpen(false);
+    }
+    function onKeyDown(e) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    desktop.addEventListener("change", onChange);
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      desktop.removeEventListener("change", onChange);
+      window.removeEventListener("keydown", onKeyDown);
+    };
   }, []);
 
   useEffect(() => {
@@ -56,7 +76,9 @@ export default function Navbar() {
     // moving the page at all. Computing the target offset and driving
     // window.scrollTo ourselves works consistently everywhere, and still
     // falls back to an instant jump if smooth scrolling isn't supported.
-    const headerOffset = 72; // matches the fixed header's h-[72px]
+    // Use the real header height (it includes any notch inset) instead of a
+    // hard-coded number, so the section heading never hides under the bar.
+    const headerOffset = headerRef.current?.offsetHeight ?? 72;
     const targetTop =
       target.getBoundingClientRect().top + window.scrollY - headerOffset + 1;
 
@@ -86,8 +108,13 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
-        scrolled ? "border-b border-white/[0.06] bg-void/70 backdrop-blur-xl" : "bg-transparent"
+      ref={headerRef}
+      className={`fixed inset-x-0 top-0 z-50 pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] pt-[env(safe-area-inset-top)] transition-all duration-300 ${
+        open
+          ? "border-b border-white/[0.06] bg-void/95 backdrop-blur-xl"
+          : scrolled
+            ? "border-b border-white/[0.06] bg-void/70 backdrop-blur-xl"
+            : "bg-transparent"
       }`}
     >
       <nav className="section-shell flex h-[72px] items-center justify-between">
@@ -99,7 +126,7 @@ export default function Navbar() {
           <span className="text-cyan">.</span>
         </button>
 
-        <ul className="hidden items-center gap-1 md:flex">
+        <ul className="hidden items-center gap-1 xl:flex">
           {LINKS.map((link) => (
             <li key={link.id}>
               <button
@@ -121,7 +148,7 @@ export default function Navbar() {
           ))}
         </ul>
 
-        <div className="hidden items-center gap-3 md:flex">
+        <div className="hidden items-center gap-3 xl:flex">
           <ThemeToggle theme={theme} onToggle={toggleTheme} className="!h-9 !w-9" />
           <button
             onClick={openResume}
@@ -138,12 +165,15 @@ export default function Navbar() {
           </button>
         </div>
 
-        <div className="flex items-center gap-3 md:hidden">
+        <div className="flex items-center gap-3 xl:hidden">
           <ThemeToggle theme={theme} onToggle={toggleTheme} className="!h-9 !w-9" />
           <button
-            className="text-ink"
+            type="button"
+            className="grid h-10 w-10 place-items-center rounded-full text-ink [touch-action:manipulation]"
             onClick={() => setOpen((v) => !v)}
-            aria-label="Toggle menu"
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
           >
             {open ? <CloseIcon /> : <MenuIcon />}
           </button>
@@ -153,11 +183,12 @@ export default function Navbar() {
       <AnimatePresence>
         {open && (
           <motion.div
+            id="mobile-menu"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="overflow-hidden border-t border-white/[0.06] bg-void/95 backdrop-blur-xl md:hidden"
+            className="max-h-[calc(100dvh-72px)] overflow-y-auto overscroll-contain border-t border-white/[0.06] bg-void/95 backdrop-blur-xl xl:hidden"
           >
             <ul className="section-shell flex flex-col gap-1 py-4">
               {LINKS.map((link, i) => (

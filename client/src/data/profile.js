@@ -1,6 +1,6 @@
-import { projects } from "./projects";
-import { certificates } from "./certificates";
-import { skills } from "./skills";
+import { projects } from "./projects.js";
+import { certificates } from "./certificates.js";
+import { skills } from "./skills.js";
 
 export const profile = {
   name: "JeysiDev",

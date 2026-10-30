@@ -10,6 +10,7 @@ import Certificates from "./components/Certificates";
 import Services from "./components/Services";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
+import Chatbot from "./components/Chatbot";
 import { useDeviceCapability } from "./hooks/useDeviceCapability";
 import { ResumeProvider } from "./context/ResumeContext";
 
@@ -126,6 +127,7 @@ export default function App() {
         <Contact />
       </main>
       <Footer />
+      {!loading && <Chatbot />}
     </ResumeProvider>
   );
 }

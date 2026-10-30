@@ -157,12 +157,6 @@ export default function Navbar() {
             <FileTextIcon width="15" height="15" />
             Resume
           </button>
-          <button
-            onClick={() => handleNavClick("contact")}
-            className="rounded-full border border-white/15 px-5 py-2 text-sm text-ink transition-colors hover:border-white hover:bg-white hover:text-void"
-          >
-            Let&apos;s talk
-          </button>
         </div>
 
         <div className="flex items-center gap-3 xl:hidden">
@@ -220,7 +214,7 @@ export default function Navbar() {
                   }}
                   className="flex w-full items-center gap-2 rounded-lg px-3 py-3 text-left text-base text-white/60 transition-transform active:scale-[0.97] [touch-action:manipulation]"
                 >
-                  <FileTextIcon width="18" height="18" />
+                 
                   Resume
                 </button>
               </motion.li>

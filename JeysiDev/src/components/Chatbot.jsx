@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { chatbotConfig } from "../data/chatbot";
 import { profile } from "../data/profile";
 import { ArrowUpRightIcon, CloseIcon, FileTextIcon } from "./ui/icons";
@@ -20,6 +20,26 @@ function ResetIcon(props) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" width="16" height="16" {...props}>
       <path d="M4 12a8 8 0 1 0 2.6-5.9M4 4v4.5h4.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/** Rounded speech bubble with an AI sparkle that twinkles every few seconds. */
+function ChatIcon({ animated = false, ...props }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" width="26" height="26" {...props}>
+      <path
+        d="M7 3.5h10a4 4 0 0 1 4 4v6a4 4 0 0 1-4 4h-6.2L7 20.5v-3a4 4 0 0 1-4-4v-6a4 4 0 0 1 4-4Z"
+        strokeLinejoin="round"
+      />
+      <motion.path
+        d="M12 6.4c.4 2.2 1.4 3.2 3.6 3.6-2.2.4-3.2 1.4-3.6 3.6-.4-2.2-1.4-3.2-3.6-3.6 2.2-.4 3.2-1.4 3.6-3.6Z"
+        fill="currentColor"
+        stroke="none"
+        style={{ transformBox: "fill-box", transformOrigin: "center" }}
+        animate={animated ? { scale: [1, 1.35, 1, 1], rotate: [0, 90, 180, 180], opacity: [1, 0.8, 1, 1] } : undefined}
+        transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut", times: [0, 0.2, 0.4, 1] }}
+      />
     </svg>
   );
 }
@@ -164,6 +184,7 @@ export default function Chatbot() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const { openResume } = useResume();
+  const reduceMotion = useReducedMotion();
   const listRef = useRef(null);
   const inputRef = useRef(null);
   const abortRef = useRef(null);
@@ -286,13 +307,27 @@ export default function Chatbot() {
             exit={{ opacity: 0, y: 18 }}
             transition={{ duration: 0.6, ease }}
             aria-label={`Chat with ${name}`}
-            className="btn-light group fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-[max(1.25rem,env(safe-area-inset-right))] z-[60] sm:bottom-8 sm:right-8"
+            className="btn-light group fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-[max(1.25rem,env(safe-area-inset-right))] z-[60] !h-14 !w-14 !p-0 shadow-lg shadow-black/30 sm:bottom-8 sm:right-8 sm:!h-auto sm:!w-auto sm:!px-7 sm:!py-3 sm:shadow-none"
           >
-            Ask {name}
+            {/* Phones: logo-only chat bubble. sm and up: the full "Ask JeysiBot" pill. */}
+            {!reduceMotion && (
+              <motion.span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 rounded-full bg-white sm:hidden"
+                initial={{ scale: 1, opacity: 0 }}
+                animate={{ scale: [1, 1.7], opacity: [0.45, 0] }}
+                transition={{ duration: 1.8, repeat: Infinity, repeatDelay: 1.6, ease: "easeOut" }}
+              />
+            )}
+            <ChatIcon
+              animated={!reduceMotion}
+              className="relative transition-transform duration-300 group-active:scale-90 sm:hidden"
+            />
+            <span className="hidden sm:inline">Ask {name}</span>
             <ArrowUpRightIcon
               width="16"
               height="16"
-              className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+              className="hidden transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 sm:block"
             />
           </motion.button>
         )}

@@ -100,7 +100,7 @@ export default function Contact() {
       setStatus("success");
       setServerMessage(data.message || "Message sent — I'll get back to you soon.");
       setForm(initialForm);
-    } catch (err) {
+    } catch {
       setStatus("error");
       setServerMessage("Couldn't send your message. Check your connection and try again.");
     }

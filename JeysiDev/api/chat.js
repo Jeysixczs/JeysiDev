@@ -10,21 +10,49 @@ import { certificates } from "../src/data/certificates.js";
 import { chatbotConfig } from "../src/data/chatbot.js";
 import { actionsPrompt } from "../src/data/chatActions.js";
 
-// Tried in order. If one hits its daily/minute quota (429) or is unavailable,
-// the next is used. Free-tier quotas are counted per model, so a fallback
-// roughly doubles the free daily allowance. Override with GEMINI_MODELS="a,b".
-const MODELS = (process.env.GEMINI_MODELS || process.env.GEMINI_MODEL || "gemini-3.5-flash-lite,gemini-3.1-flash-lite")
+// Tried in order. If one hits its quota (429) or is unavailable, the next is used.
+// Free-tier quotas are counted per model, so every extra model adds more free requests.
+// Order matters: models with the BIGGEST daily quota first, tiny-quota ones last.
+//   gemini-3.5-flash-lite, gemini-3.1-flash-lite   ~500 req/day each, 15/min
+//   gemma-4-26b-a4b-it, gemma-4-31b-it             ~14.4K req/day each, but only 16K tokens/min
+//                                                  (the prompt is ~2.3K tokens, so ~5 req/min each)
+//   gemini-3.8-flash / 3.6-flash                   ~20 req/day each (last resort)
+// Override with GEMINI_MODELS="a,b,c".
+const DEFAULT_MODELS = "gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemma-4-26b-a4b-it,gemma-4-31b-it,gemini-3.8-flash,gemini-3.6-flash";
+const MODELS = (process.env.GEMINI_MODELS || process.env.GEMINI_MODEL || DEFAULT_MODELS)
   .split(",")
   .map((m) => m.trim())
   .filter(Boolean);
 const ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/interactions";
 const API_REVISION = "2026-05-20";
 
-const MAX_MESSAGES = 12; // last N turns sent to Gemini
-const MAX_CHARS = 800; // per user message
-const RATE_LIMIT = 20; // requests per IP per 10 minutes (best effort, per instance)
+const MODEL_TIMEOUT_MS = 8000; // give up on a slow model and try the next
+const MAX_MESSAGES = 8; // last N turns sent to Gemini (fewer tokens per request)
+const MAX_CHARS = 600; // per message
+const RATE_LIMIT = 10; // requests per IP per 10 minutes (best effort, per instance)
 const WINDOW_MS = 10 * 60 * 1000;
+const DAILY_LIMIT = 40; // requests per IP per 24h
+const DAY_MS = 24 * 60 * 60 * 1000;
 const hits = new Map();
+
+// ---- Answer cache: identical first questions (like the suggestion chips) cost 0 requests.
+const CACHE_TTL = 24 * 60 * 60 * 1000;
+const CACHE_MAX = 200;
+const cache = new Map();
+const cacheKey = (text) => text.toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, "").replace(/\s+/g, " ").trim();
+
+// ---- Circuit breaker: when a model says "quota exhausted", stop calling it for a while
+// instead of wasting a request (and ~1s of latency) on every visitor.
+const bestMode = new Map(); // model -> request mode that worked last time (avoids repeat 400s)
+const cooldown = new Map(); // model -> timestamp when it may be tried again
+const isCooling = (model) => (cooldown.get(model) || 0) > Date.now();
+function coolDown(model, kind, retrySeconds) {
+  const ms =
+    kind === "day" || kind === "zero"
+      ? 60 * 60 * 1000 // daily quota: re-check in an hour
+      : Math.max(15, Math.min(retrySeconds || 60, 120)) * 1000; // per-minute quota
+  cooldown.set(model, Date.now() + ms);
+}
 
 /** Build the system prompt from the same data files the website renders. */
 function buildSystemPrompt() {
@@ -119,11 +147,12 @@ function send(res, status, obj) {
 
 function rateLimited(ip) {
   const now = Date.now();
-  const arr = (hits.get(ip) || []).filter((t) => now - t < WINDOW_MS);
+  const arr = (hits.get(ip) || []).filter((t) => now - t < DAY_MS);
   arr.push(now);
   hits.set(ip, arr);
   if (hits.size > 5000) hits.clear(); // keep memory bounded
-  return arr.length > RATE_LIMIT;
+  const recent = arr.filter((t) => now - t < WINDOW_MS).length;
+  return recent > RATE_LIMIT || arr.length > DAILY_LIMIT;
 }
 
 /** Pull the text out of an Interactions API response. */
@@ -192,42 +221,104 @@ export default async function handler(req, res) {
     content: [{ type: "text", text: m.content }],
   }));
 
-  const call = (model, withThinking) =>
-    fetch(ENDPOINT, {
+  // Single-turn questions are cached, so repeats never touch the Gemini quota.
+  const key = clean.length === 1 ? cacheKey(clean[0].content) : null;
+  if (key) {
+    const hit = cache.get(key);
+    if (hit && hit.exp > Date.now()) return send(res, 200, { reply: hit.reply, cached: true });
+  }
+
+  // mode 0: system_instruction + thinking_level minimal (fastest)
+  // mode 1: thinking_level low (for models that reject "minimal")
+  // mode 2: system_instruction only (for models that reject thinking_level)
+  // mode 3: system prompt folded into the first user turn (for models like Gemma that
+  //         don't accept system_instruction)
+  const call = (model, mode) => {
+    let modelInput = input;
+    if (mode === 3) {
+      modelInput = input.map((step, i) =>
+        i === 0
+          ? { ...step, content: [{ type: "text", text: `${SYSTEM_PROMPT}\n\n---\nVisitor message:\n${clean[0].content}` }] }
+          : step
+      );
+    }
+    const body = {
+      model,
+      input: modelInput,
+      store: false,
+      generation_config:
+        mode === 0
+          ? { temperature: 0.6, thinking_level: "minimal" }
+          : mode === 1
+            ? { temperature: 0.6, thinking_level: "low" }
+            : { temperature: 0.6 },
+    };
+    if (mode !== 3) body.system_instruction = SYSTEM_PROMPT;
+    return fetch(ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "x-goog-api-key": apiKey,
         "Api-Revision": API_REVISION,
       },
-      body: JSON.stringify({
-        model,
-        system_instruction: SYSTEM_PROMPT,
-        input,
-        store: false,
-        generation_config: withThinking ? { temperature: 0.6, thinking_level: "low" } : { temperature: 0.6 },
-      }),
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(MODEL_TIMEOUT_MS), // a slow model falls through to the next one
     });
+  };
 
   try {
     const quota = []; // one entry per model that answered 429
 
+    let tried = 0;
     for (const model of MODELS) {
-      let upstream = await call(model, true);
-      // Some models reject thinking_level; retry the same model without it.
-      if (upstream.status === 400) upstream = await call(model, false);
+      if (isCooling(model)) continue; // known to be out of quota right now, skip for free
+      tried++;
+
+      // Some models reject thinking_level / system_instruction: degrade gracefully,
+      // and remember which mode works so later requests don't waste calls on 400s.
+      let mode = bestMode.get(model) ?? 0;
+      let upstream;
+      try {
+        upstream = await call(model, mode);
+        while (upstream.status === 400 && mode < 3) upstream = await call(model, ++mode);
+      } catch (e) {
+        // timeout / network error: rest this model briefly and move on
+        console.error(`Gemini timeout/network [${model}]`, e?.name);
+        cooldown.set(model, Date.now() + 30 * 1000);
+        continue;
+      }
+      if (upstream.ok) bestMode.set(model, mode);
 
       if (upstream.ok) {
         const reply = extractText(await upstream.json());
-        if (reply) return send(res, 200, { reply });
+        if (reply) {
+          if (key) {
+            if (cache.size >= CACHE_MAX) cache.delete(cache.keys().next().value);
+            cache.set(key, { reply, exp: Date.now() + CACHE_TTL });
+          }
+          return send(res, 200, { reply });
+        }
         continue; // empty answer: try the next model
       }
 
       const detail = await upstream.text().catch(() => "");
       console.error(`Gemini error [${model}]`, upstream.status, detail.slice(0, 500));
-      if (upstream.status === 429) quota.push(classify429(detail));
+      if (upstream.status === 429) {
+        const q = classify429(detail);
+        quota.push(q);
+        coolDown(model, q.kind, q.retry);
+      } else if (upstream.status === 404) {
+        cooldown.set(model, Date.now() + 6 * 60 * 60 * 1000); // model id doesn't exist for this key
+      }
       // 429 / 5xx / 404 -> try the next model; other errors won't be fixed by another model
       if (![429, 404, 500, 502, 503, 504].includes(upstream.status)) break;
+    }
+
+    // Every model is on cooldown from earlier failures: answer instantly, no upstream call.
+    if (tried === 0 && MODELS.length) {
+      return send(res, 429, {
+        error: "The assistant is busy right now. Please try again in a few minutes, or use the contact form to reach John Carlo directly.",
+      });
     }
 
     if (quota.length) {

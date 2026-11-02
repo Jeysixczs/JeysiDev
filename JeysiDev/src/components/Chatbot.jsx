@@ -7,6 +7,31 @@ import { parseReply } from "../data/chatActions";
 import { useResume } from "../context/ResumeContext";
 
 const MAX_INPUT = 500;
+
+// Cache answers to first questions (e.g. the suggestion chips) in the browser, so
+// repeat visitors/clicks cost zero API requests.
+const CACHE_KEY = "jeysibot-cache-v1";
+const CACHE_TTL = 12 * 60 * 60 * 1000;
+const norm = (t) => t.toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, "").replace(/\s+/g, " ").trim();
+function cacheGet(q) {
+  try {
+    const hit = JSON.parse(localStorage.getItem(CACHE_KEY) || "{}")[norm(q)];
+    return hit && hit.exp > Date.now() ? hit.reply : null;
+  } catch {
+    return null;
+  }
+}
+function cacheSet(q, reply) {
+  try {
+    const all = JSON.parse(localStorage.getItem(CACHE_KEY) || "{}");
+    const keys = Object.keys(all);
+    if (keys.length > 30) delete all[keys[0]];
+    all[norm(q)] = { reply, exp: Date.now() + CACHE_TTL };
+    localStorage.setItem(CACHE_KEY, JSON.stringify(all));
+  } catch {
+    /* storage unavailable: ignore */
+  }
+}
 const ease = [0.22, 1, 0.36, 1];
 const labelClass = "font-mono text-[11px] uppercase tracking-[0.2em]";
 
@@ -230,6 +255,16 @@ export default function Chatbot() {
     setInput("");
     setLoading(true);
 
+    // Instant answer for a repeated first question: no network, no quota.
+    if (history.length === 1) {
+      const cached = cacheGet(content);
+      if (cached) {
+        setMessages([...history, { role: "assistant", content: cached }]);
+        setLoading(false);
+        return;
+      }
+    }
+
     const controller = new AbortController();
     abortRef.current = controller;
 
@@ -242,6 +277,7 @@ export default function Chatbot() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "Something went wrong. Please try again.");
+      if (history.length === 1) cacheSet(content, data.reply);
       setMessages((m) => [...m, { role: "assistant", content: data.reply }]);
     } catch (err) {
       if (err.name === "AbortError") return;

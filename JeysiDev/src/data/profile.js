@@ -32,7 +32,7 @@ export const profile = {
 
   socials: [
     { label: "GitHub", href: "https://github.com/Jeysixczs", icon: "github" },
-    { label: "LinkedIn", href: "https://www.linkedin.com/in/john-carlo-9a63b6195/", icon: "linkedin" },
+    { label: "LinkedIn", href: "https://www.linkedin.com/in/jeysixzcs/", icon: "linkedin" },
     { label: "Instagram", href: "https://www.instagram.com/chogssss/", icon: "instagram" },
     { label: "Email", href: "mailto:johncarloaquino205@gmail.com", icon: "mail" },
   ],

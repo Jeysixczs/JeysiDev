@@ -46,5 +46,13 @@ export const certificates = [
     date: "2026",
     image: "/certificates/Vibe Coding.png",
     credentialUrl: "https://simpli-web.app.link/e/zABrBGbon7b",
+  },
+  {
+    id: "certificate-7",
+    title: "Information Session on Digital Citizenship",
+    issuer: "DICT",
+    date: "2026",
+    image: "/certificates/DICT.png",
+    credentialUrl: "https://drive.google.com/file/d/1mufmP7SEvOopaxwHy_7rkE6zDB8jg3mY/view",
   }
 ];

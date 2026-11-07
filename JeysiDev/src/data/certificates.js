@@ -41,14 +41,6 @@ export const certificates = [
   },
   {
     id: "certificate-6",
-    title: "Vibe Coding Certificate",
-    issuer: "Simplilearn",
-    date: "2026",
-    image: "/certificates/Vibe Coding.png",
-    credentialUrl: "https://simpli-web.app.link/e/zABrBGbon7b",
-  },
-  {
-    id: "certificate-7",
     title: "Information Session on Digital Citizenship",
     issuer: "DICT",
     date: "2026",

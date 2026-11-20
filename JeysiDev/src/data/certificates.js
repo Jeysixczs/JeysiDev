@@ -46,5 +46,26 @@ export const certificates = [
     date: "2026",
     image: "/certificates/DICT.png",
     credentialUrl: "https://drive.google.com/file/d/1mufmP7SEvOopaxwHy_7rkE6zDB8jg3mY/view",
+  },
+  {
+    id: "certificate-7",
+    title: "Ethical Hacking",
+    issuer: "DDS | Strategies and Solutions",
+    date: "2026",
+    image: "/certificates/Ethical Hacking.png",
+  },
+  {
+    id: "certificate-8",
+    title: "Cybersecurity Incident Response",
+    issuer: "DDS | Strategies and Solutions",
+    date: "2026",
+    image: "/certificates/Cybersecurity Incident Response.png",
+  },
+  {
+    id: "certificate-9",
+    title: "Network Forensic and Threat Intelligence ",
+    issuer: "DDS | Strategies and Solutions",
+    date: "2026",
+    image: "/certificates/Network Forensics and Threat Intelligence.png",
   }
 ];
